@@ -1,9 +1,11 @@
 <?php
 
 require_once $CFG->dirroot.'/blocks/courseshop/paymodes/paymode.class.php';
+require_once $CFG->dirroot.'/blocks/courseshop/locallib.php';
 
-$settings->add(new admin_setting_configtext('block_courseshop_defaultcurrency', get_string('defaultcurrency', 'block_courseshop'),
-                   get_string('configdefaultcurrency', 'block_courseshop'), 5, PARAM_TEXT));
+$currencies = courseshop_get_supported_currencies();
+$settings->add(new admin_setting_configselect('block_courseshop_defaultcurrency', get_string('defaultcurrency', 'block_courseshop'),
+                   get_string('configdefaultcurrency', 'block_courseshop'), $CFG->block_courseshop_defaultcurrency, $currencies));
 
 $settings->add(new admin_setting_configtext('block_courseshop_discountthreshold', get_string('discountthreshold', 'block_courseshop'),
                    get_string('configdiscounttheshold', 'block_courseshop'), 0, PARAM_INT));

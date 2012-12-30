@@ -12,7 +12,7 @@
        <code><a href="<?php echo $CFG->wwwroot."/blocks/courseshop/shop/scantrace.php?transid={$portlet->transactionid}&id=$id&pinned=$pinned" ?>" title="<?php print_string('scantrace', 'block_courseshop') ?>"><?php echo $portlet->transactionid ?></a></code>
    </td>
    <td width="100" align="right" class="cell lastcol">
-		<?php echo  sprintf("%.2f", round($portlet->amount, 2)) ?> <?php echo $CFG->block_courseshop_defaultcurrency ?>
+		<?php echo  sprintf("%.2f", round($portlet->amount, 2)) ?> <?php echo get_string($portlet->currency.'_symb', 'block_courseshop') ?>
    </td>
 </tr>
 <tr valign="top">

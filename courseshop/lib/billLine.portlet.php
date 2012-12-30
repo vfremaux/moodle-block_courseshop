@@ -14,6 +14,6 @@
        <?php echo  $portlet->status ?>
    </td>
    <td width="100" valign="top" style="padding : 2px" class="billAmount">
-       <?php echo  sprintf("%.2f", round($portlet->amount, 2)) ?> <?php echo getString($_CFG['commerce']['defaultCurrency']) ?>
+       <?php echo  sprintf("%.2f", round($portlet->amount, 2)) ?> <?php echo $portlet->currency ?>
    </td>
 </tr>

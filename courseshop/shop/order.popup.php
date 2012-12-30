@@ -151,7 +151,7 @@ foreach($aFullBill->items as $portlet){
          <?php print_string('subtotal', 'block_courseshop') ?>:
       </td>
       <td width="20%" align="right" valign="top" class="cell lestcol">
-         <?php echo $aFullBill->unshippedtaxedamount ?>&nbsp;<?php echo $CFG->block_courseshop_defaultcurrency ?>&nbsp;
+         <?php echo $aFullBill->unshippedtaxedamount ?>&nbsp;<?php echo block_courseshop_currency($theBlock, 'symbol') ?>&nbsp;
       </td>
    </tr>
 <?php
@@ -175,7 +175,7 @@ if (!empty($CFG->block_courseshop_hasshipping) || ($aFullBill->shipping->value !
          <?php print_string('totaldiscounted', 'block_courseshop') ?>:
       </td>
       <td width="20%" align="right" valign="top" class="totals">
-         <?php echo $aFullBill->discountedamount ?>&nbsp;<?php echo $CFG->block_courseshop_defaultcurrency ?>&nbsp;
+         <?php echo $aFullBill->discountedamount ?>&nbsp;<?php echo block_courseshop_currency($theBlock, 'symbol') ?>&nbsp;
       </td>
    </tr>
 <?php
@@ -186,7 +186,7 @@ if (!empty($CFG->block_courseshop_hasshipping) || ($aFullBill->shipping->value !
          <?php print_string('shipping', 'block_courseshop') ?>:
       </td>
       <td width="20%" align="right" valign="top" class="totals">
-         <?php echo $aFullBill->shipping->taxedvalue ?>&nbsp;<?php echo $CFG->block_courseshop_defaultcurrency ?>&nbsp;
+         <?php echo $aFullBill->shipping->taxedvalue ?>&nbsp;<?php echo block_courseshop_currency($theBlock, 'symbol') ?>&nbsp;
       </td>
    </tr>
 <?php
@@ -197,7 +197,7 @@ if (!empty($CFG->block_courseshop_hasshipping) || ($aFullBill->shipping->value !
          <b><?php print_string('totalprice', 'block_courseshop') ?></b>:
       </td>
       <td width="20%" align="right" valign="top" class="total topay">
-         <b><?php echo $aFullBill->totaltaxedamount ?>&nbsp;<?php echo $CFG->block_courseshop_defaultcurrency ?></b>&nbsp;
+         <b><?php echo $aFullBill->totaltaxedamount ?>&nbsp;<?php echo block_courseshop_currency($theBlock, 'symbol') ?></b>&nbsp;
       </td>
    </tr>
 </table>

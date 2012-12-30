@@ -12,7 +12,7 @@ $portlet->TTCprice = courseshop_calculate_taxed($portlet->price1, $portlet->taxc
      <input type="text" name="<?php echo $portlet->shortname ?>" value="<?php echo $portlet->preset ?>" size="6" onChange="calculateLocal(this, <?php echo $portlet->TTCprice ?>);totalize();" class="form_attenuated">
   </td>
   <td class="ordercell">
-     <p>x <?php echo sprintf("%.2f", round($portlet->TTCprice, 2)) ?> <?php echo $CFG->block_courseshop_defaultcurrency ?> :  
+     <p>x <?php echo sprintf("%.2f", round($portlet->TTCprice, 2)) ?> <?php echo $portlet->currency ?> :  
   </td>
   <td class="ordercell">
      <input type="text" name="<?php echo $portlet->shortname ?>_total" value="0" size="10" disabled class="totals" >

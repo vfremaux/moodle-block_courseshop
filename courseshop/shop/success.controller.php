@@ -73,7 +73,7 @@ if ($cmd == 'confirm') {
 
 /// Send final notification by mail if something has been done the end user should know.
     
-courseshop_trace("[{$aFullBill->transactionid}] ".'Success Controller : Transaction Complete Operations');	
+courseshop_trace("[{$aFullBill->transactionid}] ".'Success Controller : Transaction Complete Operations');
 
 // notify end user
 // feedback customer with mail confirmation.
@@ -96,7 +96,7 @@ $seller = new StdClass;
 $seller->firstname = $CFG->block_courseshop_sellername;
 $seller->lastname = '';
 $seller->email = $CFG->block_courseshop_sellermail;
-$seller->maildisplay = 1;
+$seller->maildisplay = true;
 
 $title = $SITE->shortname . ' : ' . get_string('yourorder', 'block_courseshop');
 if (!empty($productiondata->private)){
@@ -106,45 +106,48 @@ if (!empty($productiondata->private)){
 }
 
 ticket_notify($aFullBill->user, $seller, $title, $sentnotification, $sentnotification, $customerBillViewUrl);
+courseshop_trace("[{$aFullBill->transactionid}] ".'Success Controller : Transaction notified to customer');
 
 /* notify sales forces and administrator */
 
 /// Send final notification by mail if something has been done the sales administrators users should know.
 
-if (!empty($productiondata->salesadmin)){
-	$salesnotification = compile_mail_template('transactionConfirm', array('TRANSACTION' => $aFullBill->transactionid,
-                                                               'SERVER' => $SITE->fullname,
-                                                               'SERVER_URL' => $CFG->wwwroot,
-                                                               'SELLER' => $CFG->block_courseshop_sellername,
-                                                               'FIRSTNAME' => $aFullBill->customer->firstname,
-                                                               'LASTNAME' => $aFullBill->customer->lastname,
-                                                               'MAIL' => $aFullBill->customer->email,
-                                                               'CITY' => $aFullBill->customer->city,
-                                                               'COUNTRY' => $aFullBill->customer->country,
-                                                               'PAYMODE' => $aFullBill->paymode,
-                                                               'ITEMS' => $aFullBill->itemcount,
-                                                               'AMOUNT' => sprintf("%.2f", round($aFullBill->untaxedamount, 2)),
-                                                               'TAXES' => sprintf("%.2f", round($aFullBill->taxes, 2)),
-                                                               'TTC' => sprintf("%.2f", round($aFullBill->amount, 2))
-                                                                ), 'block_courseshop');
-	$administratorViewUrl = $CFG->wwwroot . "/blocks/courseshop/bills/view.php?id={$instanceid}&pinned={$pinned}&view=viewBill&billid={$aFullBill->id}";
-    if($salesrole = get_record('role', 'shortname', 'sales')){
+$salesnotification = compile_mail_template('transactionConfirm', array('TRANSACTION' => $aFullBill->transactionid,
+                                                           'SERVER' => $SITE->fullname,
+                                                           'SERVER_URL' => $CFG->wwwroot,
+                                                           'SELLER' => $CFG->block_courseshop_sellername,
+                                                           'FIRSTNAME' => $aFullBill->customer->firstname,
+                                                           'LASTNAME' => $aFullBill->customer->lastname,
+                                                           'MAIL' => $aFullBill->customer->email,
+                                                           'CITY' => $aFullBill->customer->city,
+                                                           'COUNTRY' => $aFullBill->customer->country,
+                                                           'PAYMODE' => $aFullBill->paymode,
+                                                           'ITEMS' => $aFullBill->itemcount,
+                                                           'AMOUNT' => sprintf("%.2f", round($aFullBill->untaxedamount, 2)),
+                                                           'TAXES' => sprintf("%.2f", round($aFullBill->taxes, 2)),
+                                                           'TTC' => sprintf("%.2f", round($aFullBill->amount, 2))
+                                                            ), 'block_courseshop');
+$administratorViewUrl = $CFG->wwwroot . "/blocks/courseshop/bills/view.php?id={$instanceid}&pinned={$pinned}&view=viewBill&billid={$aFullBill->id}";
 
-		$seller = new StdClass;
-	    $seller->firstname = $CFG->block_courseshop_sellername;
-	    $seller->lastname = '';
-	    $seller->email = $CFG->block_courseshop_sellermail;
-	    $seller->maildisplay = 1;
-	    
-	    $title = $SITE->shortname . ' : ' . get_string('orderinput', 'block_courseshop');
-		if (!empty($productiondata->private)){
-	    	$sentnotification = str_replace('<%%PRODUCTION_DATA%%>', $productiondata->salesadmin, $salesnotification);
-	    } else {
-	    	$sentnotification = str_replace('<%%PRODUCTION_DATA%%>', '', $salesnotification);
-	    }
-    	
-    	ticket_notifyrole($salesrole->id, get_context_instance(CONTEXT_SYSTEM), $seller, $title, $sentnotification, $sentnotification, $administratorViewUrl);        	
+if($salesrole = get_record('role', 'shortname', 'sales')){
+
+	$seller = new StdClass;
+    $seller->firstname = $CFG->block_courseshop_sellername;
+    $seller->lastname = '';
+    $seller->email = $CFG->block_courseshop_sellermail;
+    $seller->maildisplay = true;
+    
+    $title = $SITE->shortname . ' : ' . get_string('orderinput', 'block_courseshop');
+	if (!empty($productiondata->private)){
+    	$sentnotification = str_replace('<%%PRODUCTION_DATA%%>', $productiondata->salesadmin, $salesnotification);
+    } else {
+    	$sentnotification = str_replace('<%%PRODUCTION_DATA%%>', '', $salesnotification);
     }
+	
+	ticket_notifyrole($salesrole->id, get_context_instance(CONTEXT_SYSTEM), $seller, $title, $sentnotification, $sentnotification, $administratorViewUrl);
+	courseshop_trace("[{$aFullBill->transactionid}] Courseshop Transaction Confirm Notification to sales");
+} else {
+	courseshop_trace("[{$aFullBill->transactionid}] ".'Success Controller : No sales role defined');
 }
 
 unset($SESSION->shoppingcart);

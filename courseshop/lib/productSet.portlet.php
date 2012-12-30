@@ -5,8 +5,7 @@
         </td>
         <td align="left" class="producttitle">
          	<p><b><?php echo $portlet->name ?></b>
-         	<?php echo $portlet->description ?>
-         
+         	<?php echo $portlet->description ?>         
         </td>
    	</tr>
    	<tr>
@@ -22,7 +21,7 @@
 						<?php
 					    if ($aSetElement->image != ''){
 						?>
-				         <a href="Javascript:openImage('<?php echo $aSetElement->image ?>', '<?php echo $_CFG['SITE_URL'] ?>/')"><?php echo getTranslation('Voir en plus grand') ?></a>
+				         <a href="Javascript:openImage('<?php echo $aSetElement->image ?>', '<?php echo $_CFG['SITE_URL'] ?>/')"><?php echo get_string('enlarge', 'block_courseshop') ?></a>
 						<?php
 					    }
 						?>
@@ -34,7 +33,7 @@
 						}
 						?>
          				<p><strong><?php print_string('ref', 'block_courseshop') ?> : <?php echo $aSetElement->code ?> - </strong> 
-         					<?php print_string('puttc', 'block_courseshop') ?> = <b><?php echo $aSetElement->TTCprice ?> &euro;</b><br>
+         					<?php print_string('puttc', 'block_courseshop') ?> = <b><?php echo $aSetElement->TTCprice .' '. $portlet->currency ?> </b><br>
 						<?php
 					    if ($aSetElement->showsdescriptioninset){
 							echo $aSetElement->description;

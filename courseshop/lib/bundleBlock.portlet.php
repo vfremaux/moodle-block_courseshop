@@ -73,7 +73,7 @@ foreach($portlet->set as $aBundleElement){
         </td>
         <td width="350">
             <strong><?php print_string('ref', 'block_courseshop') ?> : <?php echo $portlet->code ?> - </strong>
-            <?php print_string('puttc', 'block_courseshop') ?> = <b><?php echo $TTCprice ?> &euro;</b><br>
+            <?php print_string('puttc', 'block_courseshop') ?> = <b><?php echo $TTCprice.' '. $portlet->currency ?> </b><br>
 	        <input type="button" name="" value="<?php print_string('buy', 'block_courseshop') ?>" onclick="addOneUnit('<?php echo $portlet->shortname ?>', <?php echo $portlet->TTCprice ?>, '<?php echo $portlet->maxdeliveryquant ?>')">
 	        <span id="bag_<?php echo $portlet->shortname ?>"></span>
         </td>

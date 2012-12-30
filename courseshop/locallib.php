@@ -405,4 +405,73 @@ function courseshop_calculate_taxed($htprice, $taxid){
 	return $TTC;
 }
 
+/**
+* International currencies
+* from http://fr.wikipedia.org/wiki/ISO_4217
+*/
+function courseshop_get_supported_currencies(){
+	static $CURRENCIES;
+	
+	if (!isset($CURRENCIES)){
+	
+		$CURRENCIES = array('EUR' => get_string('EUR', 'block_courseshop'), // Euro
+							'CHF' => get_string('CHF', 'block_courseshop'), // Swiss franc
+							'USD' => get_string('USD', 'block_courseshop'), // US dollar
+							'CAD' => get_string('CAD', 'block_courseshop'), // Canadian dollar
+							'AUD' => get_string('AUD', 'block_courseshop'), // Australian dollar
+							'GPB' => get_string('GPB', 'block_courseshop'), // English pound
+							'TRY' => get_string('TRY', 'block_courseshop'), // Turkish pound
+							'PLN' => get_string('PLN', 'block_courseshop'), // Zloty (Poland)
+							'RON' => get_string('RON', 'block_courseshop'), // Roman leu
+							'ILS' => get_string('ILS', 'block_courseshop'), // Shekel
+							'KRW' => get_string('KRW', 'block_courseshop'), // Won (corea)
+							'JPY' => get_string('JPY', 'block_courseshop'), // Yen (japan)
+							'TND' => get_string('TND', 'block_courseshop'), // Dinar (Tunisian, internal market)
+							'MAD' => get_string('MAD', 'block_courseshop'), // Dinar (Marocco, internal market)
+					  );
+	}
+	
+	return $CURRENCIES;
+}
+
+function block_courseshop_currency($block, $long = false){
+	global $CFG;
+	
+	if (!isset($block->config->currency)){
+		$currencycode = (isset($CFG->block_courseshop_defaultcurrency)) ? $CFG->block_courseshop_defaultcurrency : 'EUR' ;
+	} else {
+		$currencycode = $block->config->currency;
+	}
+	if ($long){
+		if ($long == 'symbol'){
+			return get_string($block->config->currency.'_symb', 'block_courseshop');
+		}
+		return get_string($block->config->currency, 'block_courseshop');
+	}
+	return $block->config->currency;
+}
+
+
+function block_courseshop_print_currency_choice($cur, $url, $cgicontext = array(), $return = false){
+
+	$str = '';
+	
+    $usedcurrencies = get_records('courseshop_bill', '', '', '', ' DISTINCT(currency), currency ');
+    if (count($usedcurrencies) > 1){
+    	$curmenu = array();
+    	foreach($usedcurrencies as $curid => $void){
+    		$curmenu[$curid] = get_string($curid, 'block_courseshop');
+    	}
+    	$str .= "<form name=\"currencyselect\" action=\"$url\" method=\"POST\">";
+    	foreach($cgicontext as $key => $value){
+    		$str .= "<input type=\"hidden\" name=\"$key\" value=\"$value\" />\n";
+    	}
+    	$str .= choose_from_menu($curmenu, 'cur', $cur, 'choose', 'document.forms[\'currencyselect\'].submit();', false, true);
+    	$str .= '</form>';
+    }
+    
+    if ($return) return $str;
+    echo $str;
+}
+
 ?>

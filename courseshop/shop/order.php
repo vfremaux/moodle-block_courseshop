@@ -26,7 +26,6 @@
 
 ?>
 
-
 <p>
 <center>
 <?php
@@ -95,7 +94,7 @@ if (!empty($hasrequireddata)){
          <?php print_string('subtotal', 'block_courseshop') ?>:
       </td>
       <td width="20%" align="right" valign="top" class="cell lestcol">
-         <?php echo $aFullBill->unshippedtaxedamount ?>&nbsp;<?php echo $CFG->block_courseshop_defaultcurrency ?>&nbsp;
+         <?php echo $aFullBill->unshippedtaxedamount ?>&nbsp;<?php echo block_courseshop_currency($theBlock, 'symbol') ?>&nbsp;
       </td>
    </tr>
 <?php
@@ -119,7 +118,7 @@ if (!empty($CFG->block_courseshop_hasshipping) || $applyshipping){
          	<?php print_string('totaldiscounted', 'block_courseshop') ?>:
       	</td>
       	<td width="20%" align="right" valign="top" class="totals">
-         	<?php echo $aFullBill->discountedtaxedamount ?>&nbsp;<?php echo $CFG->block_courseshop_defaultcurrency ?>&nbsp;
+         	<?php echo $aFullBill->discountedtaxedamount ?>&nbsp;<?php echo block_courseshop_currency($theBlock, 'symbol') ?>&nbsp;
       	</td>
    	</tr>
 <?php
@@ -130,7 +129,7 @@ if (!empty($CFG->block_courseshop_hasshipping) || $applyshipping){
          <?php print_string('shipping', 'block_courseshop') ?>:
       </td>
       <td width="20%" align="right" valign="top" class="totals">
-         <?php echo $aFullBill->shipping->taxedvalue ?>&nbsp;<?php echo $CFG->block_courseshop_defaultcurrency ?>&nbsp;
+         <?php echo $aFullBill->shipping->taxedvalue ?>&nbsp;<?php echo block_courseshop_currency($theBlock, 'symbol') ?>&nbsp;
       </td>
    </tr>
 <?php
@@ -141,7 +140,7 @@ if (!empty($CFG->block_courseshop_hasshipping) || $applyshipping){
          <b><?php print_string('totalprice', 'block_courseshop') ?></b>:
       </td>
       <td width="20%" align="right" valign="top" class="total topay">
-         <b><?php echo $aFullBill->totaltaxedamount ?>&nbsp;<?php echo $CFG->block_courseshop_defaultcurrency ?></b>&nbsp;
+         <b><?php echo $aFullBill->totaltaxedamount ?>&nbsp;<?php echo block_courseshop_currency($theBlock, 'symbol') ?></b>&nbsp;
       </td>
    </tr>
 </table>
@@ -167,12 +166,10 @@ if (!empty($CFG->block_courseshop_hasshipping) || $applyshipping){
 	
 	$pm->print_payment_portlet($aFullBill);
 
-	// include $CFG->dirroot.'/blocks/courseshop/paymodes/'.$paymode.'/payment'.$paymode.'.php';
-
-// noconfirm can be setup by the payment mode plugin, specially if payment mode is online.
-if ($pm->needslocalconfirm()){
-	courseshop_print_local_confirmation_form($hasrequireddata);
-}
+	// noconfirm can be setup by the payment mode plugin, specially if payment mode is online.
+	if ($pm->needslocalconfirm()){
+		courseshop_print_local_confirmation_form($hasrequireddata);
+	}
 ?>
 
 <!-- include customer question support -->

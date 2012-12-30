@@ -237,7 +237,7 @@ if (count($billitems) == 0) {
           	}
        	}
 	  // $bill->amount = $bill->amount + ($bill->untaxedamount + $bill->taxes);
-	   if (empty($bill->currency)) $bill->currency = 'EUROS'; // go to default
+	   if (empty($bill->currency)) $bill->currency = 'EUR'; // go to default
 	   if (!$newid = update_record('courseshop_bill', $bill)){
             error("could not update bill");
         }
@@ -300,7 +300,7 @@ if (count($billitems) == 0) {
          <?php print_string('totalti', 'block_courseshop'); ?>				
       </td>
       <td valign="top" style="padding : 2px" class="" align="right">
-         <?php echo sprintf('%.2f', round($bill->untaxedamount, 2)) ?> <?php echo $bill->currency ?>
+         <?php echo sprintf('%.2f', round($bill->untaxedamount, 2)) ?> <?php echo get_string($bill->currency.'_symb', 'block_courseshop') ?>
       </td>
    </tr>
    <tr class="taxes">
@@ -316,7 +316,7 @@ if (count($billitems) == 0) {
          <?php print_string('totalTTC', 'block_courseshop') ?>
       </td>
       <td valign="top" style="padding : 2px" class="" align="right">
-         <?php echo sprintf('%.2f', round($bill->amount, 2)) ?> <?php echo $bill->currency ?>
+         <?php echo sprintf('%.2f', round($bill->amount, 2)) ?> <?php echo get_string($aFullBill->currency.'_symb', 'block_courseshop') ?>
       </td>
    </tr>
    <tr>

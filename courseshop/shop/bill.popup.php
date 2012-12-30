@@ -162,7 +162,7 @@
          <?php print_string('subtotal', 'block_courseshop') ?>:
       </td>
       <td width="20%" align="right" valign="top" class="total">
-         <?php echo $aFullBill->unshippedtaxedamount ?>&nbsp;<?php echo $CFG->block_courseshop_defaultcurrency ?>&nbsp;
+         <?php echo $aFullBill->unshippedtaxedamount ?>&nbsp;<?php echo get_string($aFullBill->currency.'_symb', 'block_courseshop') ?>&nbsp;
       </td>
    </tr>
 <?php
@@ -186,7 +186,7 @@ if (!empty($CFG->block_courseshop_hasshipping) || $aFullBill->shipping->value > 
          <?php print_string('totaldiscounted', 'block_courseshop') ?>:
       </td>
       <td width="20%" align="right" valign="top" class="cell c2">
-         <?php echo $aFullBill->discountedtaxedamount ?>&nbsp;<?php echo $CFG->block_courseshop_defaultcurrency ?>&nbsp;
+         <?php echo $aFullBill->discountedtaxedamount ?>&nbsp;<?php echo get_string($aFullBill->currency.'_symb', 'block_courseshop') ?>&nbsp;
       </td>
    </tr>
 <?php
@@ -197,7 +197,7 @@ if (!empty($CFG->block_courseshop_hasshipping) || $aFullBill->shipping->value > 
          <?php print_string('shipping', 'block_courseshop') ?>:
       </td>
       <td width="20%" align="right" class="cell c2">
-         <?php echo $aFullBill->shipping->value ?>&nbsp;<?php echo $CFG->block_courseshop_defaultcurrency ?>&nbsp;
+         <?php echo $aFullBill->shipping->value ?>&nbsp;<?php echo get_string($aFullBill->currency.'_symb', 'block_courseshop') ?>&nbsp;
       </td>
    </tr>
 <?php
@@ -208,7 +208,7 @@ if (!empty($CFG->block_courseshop_hasshipping) || $aFullBill->shipping->value > 
          <?php print_string('totalpriceTTC', 'block_courseshop') ?>:
       </td>
       <td width="20%" align="right" valign="top" class="cll c2 topay">
-         <?php echo $aFullBill->totaltaxedamount ?>&nbsp;<?php echo  $CFG->block_courseshop_defaultcurrency ?>&nbsp;
+         <?php echo $aFullBill->totaltaxedamount ?>&nbsp;<?php echo get_string($aFullBill->currency.'_symb', 'block_courseshop') ?>&nbsp;
       </td>
    </tr>
 </table>
@@ -247,7 +247,7 @@ if (!empty($aFullBill->taxes)) {
             <b><?php echo get_string('totaltaxes', 'block_courseshop') ?>: </b>
         </td>
         <td align="right" class="total">
-         <?php echo $aFullBill->totaltaxes ?>&nbsp;<?php echo $CFG->block_courseshop_defaultcurrency ?>&nbsp;
+         <?php echo $aFullBill->totaltaxes ?>&nbsp;<?php echo get_string($aFullBill->currency.'_symb', 'block_courseshop') ?>&nbsp;
         </td>
     </tr>
 <?php

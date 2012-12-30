@@ -3,15 +3,11 @@
 $string['ABANDONNED'] = 'Exhausted';
 $string['AVAILABLE'] = 'Available';
 $string['AVAILABLEINTERNAL'] = 'Avail. (internal)';
-$string['CANADIAN DOLLARS'] = 'CANADIAN DOLLARS';
 $string['CANCELLED'] = 'Cancelled';
 $string['DELAYED'] = 'Unconfirmed';
-$string['DOLLARS'] = 'DOLLARS';
-$string['EUROS'] = 'EUROS';
 $string['PARTIAL'] = 'Partially paied';
 $string['PAYBACK'] = 'Payback';
 $string['PENDING'] = 'Pending';
-$string['POUNDS'] = 'POUNDS';
 $string['PREVIEW'] = 'Preview';
 $string['PROVIDING'] = 'Providing';
 $string['RECOVERING'] = 'Recovering';
@@ -20,7 +16,6 @@ $string['SUSPENDED'] = 'Suspended';
 $string['TTC (1)'] = 'TI (1)';
 $string['TTC'] = 'TTC';
 $string['WORKING'] = 'On work (internal)';
-$string['YEN'] = 'YEN';
 $string['abstract'] = 'Abstract';
 $string['addcustomeraccount'] = 'Add customer account';
 $string['admin'] = 'Administration';
@@ -160,6 +155,7 @@ $string['newset'] = 'New set';
 $string['nocats'] = 'No categories';
 $string['notes'] = 'Notes:';
 $string['notrace'] = 'No trace for this transaction';
+$string['nosamecurrency'] = 'All bills have not the same curency. Sum is not consistant';
 $string['num'] = 'N°';
 $string['oneday'] = 'a day';
 $string['onehour'] = 'one hour';
@@ -295,4 +291,38 @@ while ($var = readdir($dir)) {
 			include_once $CFG->dirroot.'/blocks/courseshop/paymodes/'.$var.'/lang/en_utf8/'.$var.'.php';
 		}
 	}	
-}	
+}
+
+// currencies
+
+$string['currency'] = 'Currency ';
+$string['EUR'] = 'Euro';
+$string['CHF'] = 'Swiss franc';
+$string['USD'] = 'US dollar';
+$string['CAD'] = 'Canadian dollar';
+$string['AUD'] = 'Australian dollar';
+$string['GPB'] = 'English pound';
+$string['TRY'] = 'Turkish pound';
+$string['PLN'] = 'Zloty (Poland)';
+$string['RON'] = 'Roman leu';
+$string['ILS'] = 'Shekel';
+$string['KRW'] = 'Won (corea)';
+$string['JPY'] = 'Yen (japan)';
+$string['TND'] = 'Dinar (Tunisian, internal market)';
+$string['MAD'] = 'Dinar (Marocco, internal market)';
+
+$string['EUR_symb'] = '&euro;';
+$string['CHF_symb'] = 'CHF';
+$string['USD_symb'] = '$ (US) ';
+$string['CAD_symb'] = '$ (CA)';
+$string['AUD_symb'] = '$ (AU)';
+$string['GPB_symb'] = '£';
+$string['TRY_symb'] = '£ (TK)';
+$string['PLN_symb'] = 'Zl';
+$string['RON_symb'] = 'Leu';
+$string['ILS_symb'] = 'Sh';
+$string['KRW_symb'] = 'Won (corea)';
+$string['JPY_symb'] = 'Yen (japan)';
+$string['TND_symb'] = 'Dn (TU)';
+$string['MAD_symb'] = 'Dn (MA)';
+

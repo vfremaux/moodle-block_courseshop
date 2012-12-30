@@ -108,6 +108,7 @@
         
         if (!empty($cat->products)){
             foreach($cat->products as $aProduct){
+            	$aProduct->currency = block_courseshop_currency($theBlock, 'symbol');
                 subportlet($aProduct);
             }
         } else {
@@ -151,7 +152,7 @@
       </td>
       <td align="left" class="ordercell">
          <span id="total_euros_span">0.00</span> 
-         <?php echo $CFG->block_courseshop_defaultcurrency ?> 
+         <?php echo block_courseshop_currency($theBlock, 'symbol') ?> 
          <?php print_string('for', 'block_courseshop') ?> 
          <span id="object_count_span">0</span> 
          <?php print_string('objects', 'block_courseshop') ?> .
@@ -163,7 +164,7 @@ if (!empty($CFG->block_courseshop_discountthreshold)){
 ?>
    <tr>
       <td>
-         <?php print_string('ismorethan', 'block_courseshop') ?> <b><?php echo  $CFG->block_courseshop_discountthreshold ?>&nbsp;</b><b><?php echo  $CFG->block_courseshop_defaultcurrency ?></b>,<br/> 
+         <?php print_string('ismorethan', 'block_courseshop') ?> <b><?php echo  $CFG->block_courseshop_discountthreshold ?>&nbsp;</b><b><?php echo block_courseshop_currency($theBlock, 'symbol') ?></b>,<br/> 
          <?php print_string('yougetdiscountof', 'block_courseshop') ?> <b><?php echo $CFG->block_courseshop_discountrate  ?> %</b>.<br/>
       </td>
       <td>&nbsp;
@@ -178,7 +179,7 @@ if (!empty($CFG->block_courseshop_discountthreshold)){
       </td>
       <td align="left" class="finalcount">
          <span id="discounted_span">0.00</span>
-         <input type="hidden" name='discounted' size="8" maxlength="6" value="0"> <?php echo  $CFG->block_courseshop_defaultcurrency ?>
+         <input type="hidden" name='discounted' size="8" maxlength="6" value="0"> <?php echo block_courseshop_currency($theBlock, 'symbol') ?>
       </td>
    </tr>
    <tr>
@@ -289,7 +290,7 @@ if (!empty($theBlock->config->customerorganisationrequired)){
       </td>
       <td align="left">
         <?php 
-            $country = 'FR';
+            // $country = 'FR';
             $choices = get_list_of_countries();
             $choices = array('' => get_string('selectacountry').'...') + $choices;
             choose_from_menu($choices, 'country', $country, 'choose', '', '0', false, false, 0, '', false, false, 'countrybox');
@@ -317,11 +318,13 @@ if (!empty($theBlock->config->customerorganisationrequired)){
         foreach($aCategory->products as $aProduct){
             if ($aProduct->isset === 1){
                 foreach($aProduct->set as $portlet){
+                	$portlet->currency = block_courseshop_currency($theBlock, 'symbol');
                     $portlet->preset = !empty($SESSION->shoppingcart[$portlet->shortname]) ? $SESSION->shoppingcart[$portlet->shortname] : 0 ;
                     include ($CFG->dirroot.'/blocks/courseshop/lib/shopProductTotalLine.portlet.php');
                 }
             } else {
                 $portlet = &$aProduct;
+            	$portlet->currency = block_courseshop_currency($theBlock, 'symbol');
                 $portlet->preset = !empty($SESSION->shoppingcart[$portlet->shortname]) ? $SESSION->shoppingcart[$portlet->shortname] : 0 ;
                 include($CFG->dirroot.'/blocks/courseshop/lib/shopProductTotalLine.portlet.php');
             }

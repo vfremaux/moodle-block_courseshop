@@ -36,6 +36,8 @@
 		echo "</td><td>";
 		print_single_button($CFG->wwwroot.'/login/index.php', null, get_string('login'));
 		echo "</td></tr></table>";
+		print_footer();
+		die;
 	}
     
 /// input validation process.
@@ -175,7 +177,7 @@
             $bill->timetodo = 7; 
             $bill->taxes = 0;
             $bill->amount = 0;
-            $bill->currency = $CFG->block_courseshop_defaultcurrency;
+            $bill->currency = $theBlock->currency;
             $bill->convertedamount = 0;
             $bill->transactionid = $transid;
             $bill->expectedpaiement = time() + DAYSECS * 15;
@@ -384,9 +386,10 @@
             $sender->firstname = $firstname;
             $sender->lastname = $lastname;
             $sender->email = $mail;
-            $sender->emailstop = 0;
-            $sender->maildisplay = 0;
+            $sender->emailstop = false;
+            $sender->maildisplay = true;
             ticket_notifyrole($salesrole->id, $context, $sender, $SITE->shortname . ' : ' . get_string('orderinput', 'block_courseshop'), $notification, $notification, $billViewUrl); 
+			courseshop_trace("[{$aFullBill->transactionid}] Courseshop Transaction Start Notification to sales");
         }
     }
 

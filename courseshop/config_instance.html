@@ -1,5 +1,16 @@
 <?php
 require_once $CFG->dirroot.'/blocks/courseshop/paymodes/paymode.class.php';
+
+if (empty($CFG->block_courseshop_defaultcurrency)){
+	set_config('block_courseshop_defaultcurrency', 'EUR');
+}
+
+if (isset($this->config->currency)){
+	$currency = $this->config->currency;
+} else {
+	$currency = $CFG->block_courseshop_defaultcurrency;
+}
+
 ?>
 
 <fieldset id="connection">
@@ -59,6 +70,15 @@ require_once $CFG->dirroot.'/blocks/courseshop/paymodes/paymode.class.php';
 		print_string('carefullchoice', 'block_courseshop');
 	?>
     </td> 
+</tr>
+<tr valign="top">
+    <td align="right"><b><?php print_string('currency', 'block_courseshop'); ?>:</b></td>
+    <td align="left">
+        <?php
+        	$currencies = courseshop_get_supported_currencies();
+        	choose_from_menu($currencies, 'currency', $currency);
+        ?>
+    </td>
 </tr>
 
 <tr valign="top">

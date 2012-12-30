@@ -112,14 +112,14 @@
 			
     		$mform->addElement('hidden', 'ordering', $lastordering);
     		
-			$mform->addElement('htmleditor', 'abstract', get_string('abstract', 'block_courseshop'));
+			$mform->addElement('htmleditor', 'abstract', get_string('abstract', 'block_courseshop').':');
 											
 			$radioarray = array();
 			
 			$radioarray[] = &$mform->createElement('radio', 'ignoretax', '', get_string('yes'), 0, $attributes);
 			$radioarray[] = &$mform->createElement('radio', 'ignoretax', '', get_string('no'), 1, $attributes);
 			
-			$mform->addGroup($radioarray, 'radioar', get_string('allowtax', 'block_courseshop'), array(' '), false);
+			$mform->addGroup($radioarray, 'radioar', get_string('allowtax', 'block_courseshop').':', array(' '), false);
     		
 			$mform->setHelpButton('radioar', array('allowtax', get_string('allowingtax', 'block_courseshop'), 'block_courseshop'));
 			
@@ -136,7 +136,7 @@
 				
 			}
 			
-			$mform->addElement('select', 'assignedto', get_string('assignedto', 'block_courseshop'), $editoropt);
+			$mform->addElement('select', 'assignedto', get_string('assignedto', 'block_courseshop').':', $editoropt);
 			
 			$mform->setHelpButton('assignedto', array('bill_assignation', get_string('bill_assignation', 'block_courseshop'), 'block_courseshop'));
 							
@@ -149,13 +149,13 @@
 							 'CANCELLED'=>'CANCELLED',
 							 'WORKING'=>'WORKING'	);
 							
-			$mform->addElement('select', 'status', get_string('status', 'block_courseshop'), $status);
+			$mform->addElement('select', 'status', get_string('status', 'block_courseshop').':', $status);
 						
 			$worktype = array ( 'PROD' => 'PROD',
 								'PACK' => 'PACK',
 								'OTHER' => 'OTHER' );
 			
-			$mform->addElement('select', 'worktype', get_string('worktype', 'block_courseshop'), $worktype);
+			$mform->addElement('select', 'worktype', get_string('worktype', 'block_courseshop').':', $worktype);
 			
 			$paymode = array();
 			
@@ -173,11 +173,16 @@
 					}	
 				}	
 			}
-			$mform->addElement('select', 'paymode', get_string('paymodes', 'block_courseshop'), $paymodes);
+
+			$currencies = courseshop_get_supported_currencies();
+			$mform->addElement('select', 'currency', get_string('currency', 'block_courseshop').':', $currencies);
+			$mform->setDefault('currency', $CFG->block_courseshop_defaultcurrency);
+
+			$mform->addElement('select', 'paymode', get_string('paymodes', 'block_courseshop').':', $paymodes);
 			
 			$mform->addElement('date_selector', 'timetodo', get_string('timetodo', 'block_courseshop')); 
 						
-			$mform->addElement('date_selector', 'expectedpaiement', get_string('expectedpaiement', 'block_courseshop'));
+			$mform->addElement('date_selector', 'expectedpaiement', get_string('expectedpaiement', 'block_courseshop').':');
 						
     		// Adding submit and reset button
 			

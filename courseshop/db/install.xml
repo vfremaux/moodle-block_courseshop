@@ -141,7 +141,7 @@
         <FIELD NAME="untaxedamount" TYPE="number" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0.00" SEQUENCE="false" ENUM="false" DECIMALS="3" PREVIOUS="timetodo" NEXT="taxes"/>
         <FIELD NAME="taxes" TYPE="number" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0.00" SEQUENCE="false" ENUM="false" DECIMALS="3" PREVIOUS="untaxedamount" NEXT="amount"/>
         <FIELD NAME="amount" TYPE="number" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0.00" SEQUENCE="false" ENUM="false" DECIMALS="3" PREVIOUS="taxes" NEXT="currency"/>
-        <FIELD NAME="currency" TYPE="char" LENGTH="16" NOTNULL="true" DEFAULT="EUROS" SEQUENCE="false" ENUM="true" ENUMVALUES="'DOLLARS', 'CANADIAN DOLLARS', 'EUROS', 'POUNDS', 'YENS'" PREVIOUS="amount" NEXT="convertedamount"/>
+        <FIELD NAME="currency" TYPE="char" LENGTH="16" NOTNULL="true" DEFAULT="EUR" SEQUENCE="false" ENUM="true" ENUMVALUES="'DOLLARS', 'CANADIAN DOLLARS', 'EUROS', 'POUNDS', 'YENS'" PREVIOUS="amount" NEXT="convertedamount"/>
         <FIELD NAME="convertedamount" TYPE="number" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0.00" SEQUENCE="false" ENUM="false" DECIMALS="3" PREVIOUS="currency" NEXT="transactionid"/>
         <FIELD NAME="transactionid" TYPE="char" LENGTH="40" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="convertedamount" NEXT="onlinetransactionid"/>
         <FIELD NAME="onlinetransactionid" TYPE="char" LENGTH="128" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="transactionid" NEXT="expectedpaiement"/>

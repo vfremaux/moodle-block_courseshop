@@ -29,8 +29,8 @@
    		if (empty($bill->idnumber)){
 		?>
       	<a href="<?php echo $CFG->wwwroot."/blocks/courseshop/bills/view.php?id={$id}&view=viewBill&cmd=relocating&relocated={$portlet->id}&z={$portlet->ordering}" ?>"><img src="<?php echo $CFG->pixpath.'/t/move.gif' ?>" border="0" alt="<?php print_string('move') ?>"></a>
-      	<a href="<?php echo  $CFG->wwwroot."/blocks/courseshop/bills/edit_billitem.php?id={$id}&billid={$billid}&billitemid={$portlet->id}" ?>"><img src="<?php echo $CFG->pixpath.'/i/edit.gif' ?>" border="0" alt="<?php print_string('edit') ?>"></a>
-      	<a href="<?php echo  $CFG->wwwroot."/blocks/courseshop/bills/view.php?id={$id}&view=viewBill&cmd=deleteItem&billitemid={$portlet->id}&z={$portlet->ordering}&billid={$billid}" ?>"><img src="<?php echo $CFG->pixpath.'/t/delete.gif' ?>" border="0" alt="<?php print_string('delete') ?>"></a>
+      	<a href="<?php echo $CFG->wwwroot."/blocks/courseshop/bills/edit_billitem.php?id={$id}&billid={$billid}&billitemid={$portlet->id}" ?>"><img src="<?php echo $CFG->pixpath.'/i/edit.gif' ?>" border="0" alt="<?php print_string('edit') ?>"></a>
+      	<a href="<?php echo $CFG->wwwroot."/blocks/courseshop/bills/view.php?id={$id}&view=viewBill&cmd=deleteItem&billitemid={$portlet->id}&z={$portlet->ordering}&billid={$billid}" ?>"><img src="<?php echo $CFG->pixpath.'/t/delete.gif' ?>" border="0" alt="<?php print_string('delete') ?>"></a>
       	<?php
 	    }
 	    ?>

@@ -60,7 +60,9 @@
 		$bill->emissiondate = $now;
         $bill->lastactiondate = $now;
 				
-		$bill->currency = $CFG->block_courseshop_defaultcurrency;
+		if (empty($bill->currency)){
+			$bill->currency = $CFG->block_courseshop_defaultcurrency;
+		}
 		
 		if (!empty($CFG->block_courseshop_useshipping)){
 			$shipping = courseshop_calculate_shipping($catalogid, $country, $order);
