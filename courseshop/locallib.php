@@ -444,11 +444,11 @@ function block_courseshop_currency($block, $long = false){
 	}
 	if ($long){
 		if ($long == 'symbol'){
-			return get_string($block->config->currency.'_symb', 'block_courseshop');
+			return get_string($currencycode.'_symb', 'block_courseshop');
 		}
-		return get_string($block->config->currency, 'block_courseshop');
+		return get_string($currencycode, 'block_courseshop');
 	}
-	return $block->config->currency;
+	return $currencycode;
 }
 
 
