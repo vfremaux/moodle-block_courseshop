@@ -10,4 +10,16 @@ if ($cmd == 'deletecategory'){
 	$categoryidlist = $categoryid;
 	delete_records_select('courseshop_catalogcategory', " id IN ('$categoryidlist') ");
 }
+/******************************* Raises a question in the list ****************/
+else if ($cmd == 'up'){
+    $cid = required_param('categoryid', PARAM_INT);
+
+    courseshop_list_up($courseshop, $cid, 'courseshop_catalogcategory');
+}
+/******************************* Lowers a question in the list ****************/
+else if ($cmd == 'down'){
+    $cid = required_param('categoryid', PARAM_INT);
+
+    courseshop_list_down($courseshop, $cid, 'courseshop_catalogcategory');
+}
 ?>

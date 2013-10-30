@@ -1,0 +1,2 @@
+<p>Your payment has been confirmed by our payment partner (Mercanet BNP). We ae processing your products.</p>
+<p>If you cannot access the training platform, please contact our sales service <%%SUPPORT%%>.</p>

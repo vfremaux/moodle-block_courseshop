@@ -1,5 +1,8 @@
 <?php
 require_once $CFG->dirroot.'/blocks/courseshop/paymodes/paymode.class.php';
+require_once $CFG->dirroot.'/blocks/courseshop/shop/lib.php';
+
+$usehtmleditor = can_use_html_editor();
 
 if (empty($CFG->block_courseshop_defaultcurrency)){
 	set_config('block_courseshop_defaultcurrency', 'EUR');
@@ -9,6 +12,16 @@ if (isset($this->config->currency)){
 	$currency = $this->config->currency;
 } else {
 	$currency = $CFG->block_courseshop_defaultcurrency;
+}
+
+if (isset($this->config->defaultcountry)){
+	$country = $this->config->defaultcountry;
+} else {
+	$country = @$CFG->block_courseshop_defaultcountry;
+}
+
+if (!isset($this->config->printtabbedcategory)){
+	$this->config->printtabbedcategory = false;
 }
 
 ?>
@@ -29,9 +42,36 @@ if (isset($this->config->currency)){
     </td>
 </tr>
 <tr valign="top">
-    <td align="right"><b><?php print_string('shopdescription', 'block_courseshop'); ?>:</b></td>
+    <td align="right"><b><?php print_string('shopdescription', 'block_courseshop'); ?>:</b>
+        <?php
+                helpbutton('writing', get_string('helpwriting'), 'moodle', true, true);
+                echo "<br />";
+                if ($usehtmleditor) {
+                   helpbutton('richtext', get_string('helprichtext'), 'moodle', true, true);
+                } else {
+                   helpbutton('text', get_string('helptext'), 'moodle', true, true);
+                   echo "<br />";
+                   emoticonhelpbutton('addtaskform', 'description', 'moodle', true, true);
+                   echo "<br />";
+                }
+        ?>    	
+    </td>
     <td align="left">
-        <textarea name="shopdescription" ><?php echo isset($this->config->shopcaption)? p($this->config->shopcaption) : '' ; ?></textarea>
+        <?php
+           print_textarea($usehtmleditor, 20, 60, 595, 400, 'shopdescription', @$this->config->shopdescription);
+    
+           if ($usehtmleditor) {
+               echo '<input type="hidden" name="format" value="'.FORMAT_HTML.'" />';
+               $nohtmleditorneeded = false;
+           } else {
+               echo '<p align="right">';
+               helpbutton('textformat', get_string('formattexttype'));
+               print_string('formattexttype');
+               echo ':&nbsp;';
+               choose_from_menu(format_text_menu(), 'shopdescription', $defaultformat, '');
+               echo '</p>';
+           }
+		?>
     </td>
 </tr>
 <tr valign="top">
@@ -80,6 +120,19 @@ if (isset($this->config->currency)){
         ?>
     </td>
 </tr>
+<tr valign="top">
+    <td align="right"><b><?php print_string('customerdefaultcountry', 'block_courseshop'); ?>:</b></td>
+    <td align="left">
+        <?php
+		    $choices = get_list_of_countries();
+		    if (!empty($this->config->catalogid)){
+		    	$theCatalog = get_record('courseshop_catalog', 'id', $this->config->catalogid);
+			    courseshop_process_country_restrictions($choices, $theCatalog);
+			}
+        	choose_from_menu($choices, 'defaultcountry', $country);
+        ?>
+    </td>
+</tr>
 
 <tr valign="top">
     <td align="right"><b><?php print_string('customerorganisationrequired', 'block_courseshop'); ?>:</b></td>
@@ -93,6 +146,17 @@ if (isset($this->config->currency)){
     </td>
 </tr>
 
+<tr valign="top">
+    <td align="right"><b><?php print_string('printtabbedcategories', 'block_courseshop'); ?>:</b></td>
+    <td align="left">
+    	<?php
+    	$yeschecked = (@$this->config->printtabbedcategories) ? 'checked="checked"' : '' ;
+    	$nochecked = (@$this->config->printtabbedcategories) ? 'checked="checked"' : '' ;
+    	?>
+    	<input type="radio" name="printtabbedcategories" value="0" <?php echo $nochecked ?> /> <?php print_string('no') ?>
+    	- <input type="radio" name="printtabbedcategories" value="1" <?php echo $yeschecked ?> /> <?php print_string('yes') ?>
+    </td>
+</tr>
 
 <tr>
     <td colspan="6" align="center">
@@ -102,3 +166,8 @@ if (isset($this->config->currency)){
 </table>
 </fieldset>
 </table>
+<?php
+	if ($usehtmleditor){
+        use_html_editor('shopdescription');
+	}
+?>

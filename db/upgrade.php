@@ -1,4 +1,4 @@
-<?php  //$Id: upgrade.php,v 1.6 2012-03-14 23:31:41 vf Exp $
+<?php  //$Id: upgrade.php,v 1.3 2013-02-09 00:07:13 vf Exp $
 
 // This file keeps track of upgrades to 
 // the course_summary block
@@ -128,6 +128,112 @@ function xmldb_block_courseshop_upgrade($oldversion=0) {
         $result = $result && add_field($table, $field);
     }
 
+    if ($result && $oldversion < 2013011001) {
+
+    /// Define field sortorder to be added to courseshop_catalogcategory
+        $table = new XMLDBTable('courseshop_catalogcategory');
+        $field = new XMLDBField('sortorder');
+        $field->setAttributes(XMLDB_TYPE_INTEGER, '4', XMLDB_UNSIGNED,  XMLDB_NOTNULL, null, null, null, 0, 'description');
+
+    /// Launch add field enablehandler
+        $result = $result && add_field($table, $field);
+
+        $field = new XMLDBField('visible');
+        $field->setAttributes(XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED,  XMLDB_NOTNULL, null, null, null, 1, 'sortorder');
+
+    /// Launch add field enablehandler
+        $result = $result && add_field($table, $field);
+        
+        // reorder existing categories
+        if ($catalogs = get_records('courseshop_catalog')){
+        	foreach($catalogs as $catalog){
+        		if ($cats = get_records('courseshop_catalogcategory', 'catalogid', $catalog->id)){
+        			$i = 1;
+        			foreach($cats as $c){
+        				$c->sortorder = $i;
+        				update_record('courseshop_catalogcategory', $c);
+        				$i++;
+        			}
+        		}
+        	}
+        }
+    }
+
+    if ($result && $oldversion < 2013011002) {
+
+    /// Define field sortorder to be added to courseshop_catalog
+        $table = new XMLDBTable('courseshop_catalog');
+        $field = new XMLDBField('countryrestrictions');
+        $field->setAttributes(XMLDB_TYPE_CHAR, '255', null, null, null, null, null, 0, 'groupid');
+
+    /// Launch add field enablehandler
+        $result = $result && add_field($table, $field);
+        
+    }
+
+    if ($result && $oldversion < 2013030300) {
+
+    /// Define table courseshop_product to be created
+        $table = new XMLDBTable('courseshop_product');
+
+    /// Adding fields to table courseshop_product
+        $table->addFieldInfo('id', XMLDB_TYPE_INTEGER, '11', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null, null);
+        $table->addFieldInfo('catalogitemid', XMLDB_TYPE_INTEGER, '11', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, null, '0');
+        $table->addFieldInfo('customerid', XMLDB_TYPE_INTEGER, '11', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, null, '0');
+        $table->addFieldInfo('startdate', XMLDB_TYPE_INTEGER, '11', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, null, '0');
+        $table->addFieldInfo('enddate', XMLDB_TYPE_INTEGER, '11', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, null, '0');
+        $table->addFieldInfo('reference', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, null, null);
+        $table->addFieldInfo('productiondata', XMLDB_TYPE_TEXT, 'small', null, XMLDB_NOTNULL, null, null, null, null);
+
+    /// Adding keys to table courseshop_product
+        $table->addKeyInfo('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+    /// Adding indexes to table courseshop_product
+        $table->addIndexInfo('ix_cs_product_catalogitem', XMLDB_INDEX_NOTUNIQUE, array('catalogitemid'));
+        $table->addIndexInfo('ix_cs_product_customer', XMLDB_INDEX_NOTUNIQUE, array('customerid'));
+
+    /// Launch create table for courseshop_product
+        $result = $result && create_table($table);
+
+    /// Define table courseshop_product_billitem to be created
+        $table = new XMLDBTable('courseshop_product_billitem');
+
+    /// Adding fields to table courseshop_product_billitem
+        $table->addFieldInfo('id', XMLDB_TYPE_INTEGER, '11', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null, null);
+        $table->addFieldInfo('productid', XMLDB_TYPE_INTEGER, '11', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, null, null);
+        $table->addFieldInfo('billitemid', XMLDB_TYPE_INTEGER, '11', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, null, null);
+        $table->addFieldInfo('datecreated', XMLDB_TYPE_INTEGER, '11', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, null, null);
+
+    /// Adding keys to table courseshop_product_billitem
+        $table->addKeyInfo('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+    /// Adding indexes to table courseshop_product_billitem
+        $table->addIndexInfo('ix_cs_product_id', XMLDB_INDEX_NOTUNIQUE, array('productid'));
+        $table->addIndexInfo('ix_cs_product_billitem', XMLDB_INDEX_NOTUNIQUE, array('billitemid'));
+
+    /// Launch create table for courseshop_product_billitem
+        $result = $result && create_table($table);
+        
+    }
+
+    if ($result && $oldversion < 2013030301) {
+
+    /// Define field renewable to be added to courseshop_catalog_item
+        $table = new XMLDBTable('courseshop_catalogitem');
+        $field = new XMLDBField('renewable');
+        $field->setAttributes(XMLDB_TYPE_INTEGER, 1, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, null, '0', 'handlerparams');
+
+    /// Launch add field renewable
+        $result = $result && add_field($table, $field);
+
+    /// Define field eulaurl to be added to courseshop_catalog_item
+        $field = new XMLDBField('eulaurl');
+        $field->setAttributes(XMLDB_TYPE_CHAR, 255, null, null, null, null, null, null, 'renewable');
+
+    /// Launch add field eulaurl
+        $result = $result && add_field($table, $field);
+        
+    }
 
     return $result;
 }

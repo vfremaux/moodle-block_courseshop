@@ -1,0 +1,2 @@
+<p class="courseshop-info">Your request is being prepared. You will notified by mail when complete.</p>
+<p>If you do not have any result notification in a short delay, please contact our support service <%%SUPPORT%%>.</p>

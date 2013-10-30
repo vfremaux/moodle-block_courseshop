@@ -8,9 +8,15 @@
 	$id = required_param('id', PARAM_INT); // the blockid
 	$pinned = optional_param('pinned', 0, PARAM_INT);
     $theBlock = courseshop_get_block_instance($id, $pinned);
+    $blockcontext = get_context_instance(CONTEXT_BLOCK, $id);
 
     // security
+    // Todo : Reinforce security. Some bills might not be shown to some users.
     require_login();
+
+    if (isguest()){
+    	error("Guests are not allowed here");
+    }
     
     if (count_records('courseshop_catalog') == 1){
         $cats = get_records('courseshop_catalog');
@@ -48,6 +54,10 @@
         $navlinks[] = array('name' => get_string('bill', 'block_courseshop', $billID),
                   'link' => '',
                   'type' => 'title');
+    }
+
+    if ($view == 'viewAllBills'){
+    	require_capability('block/courseshop:salesadmin', $blockcontext);
     }
     
     $navigation = build_navigation($navlinks);

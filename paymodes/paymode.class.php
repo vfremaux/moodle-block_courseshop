@@ -40,6 +40,14 @@ abstract class courseshop_paymode {
 
 	// processes a payment asynchronoous confirmation
 	abstract function process_ipn();
+
+	function is_interactive(){
+		return true;
+	}
+	
+	function has_config(){
+		return true;
+	}
 	
 	// provides global settings to add to courseshop settings when installed
 	abstract function settings(&$settings);	
@@ -84,22 +92,28 @@ abstract class courseshop_paymode {
 	function needslocalconfirm(){
 		return !$this->overridelocalconfirm;
 	}
-	
-	public static function resolve_transaction_identification(&$transid, &$cmd, &$paymode){
-		$plugins = courseshop_paymode::courseshop_get_plugins(null);
-		$transid = '';
-		$cmd = '';
+
+	/**
+	* scans all plugins to guess for payment system return data 
+	* Tries to guess transaction identity form one of the data model
+	* @param object $config the shop instance (block) configuration
+	*/	
+	public static function resolve_transaction_identification(&$theBlock){
+
+		if (empty($theBlock) || empty($theBlock->config)){
+			error('courseshop block is not configured');
+		}
+		
+		$plugins = courseshop_paymode::courseshop_get_plugins($theBlock);
 		foreach($plugins as $plugin){
-			$plugin->identify_transaction($transid, $cmd);
-			if (!empty($transid)){
-    			$paymode = strtolower(get_field('courseshop_bill', 'paymode', 'transactionid', $transid));
-    			if ($paymode != $plugin->get_name()){
-    				$transid = '';
-    				$cmd = '';
-    				error(get_string('paymodedonotmatchtoresponse', 'block_courseshop'));
-    			}
-    			// we have valid transid and cmd and paymode, so process it in controller
-				return $plugin;
+			$isenabledvar = "enable".$plugin->name;
+			if (!empty($theBlock->config->$isenabledvar)){
+				if (method_exists($plugin, 'identify_transaction')){
+					$transinfo = $plugin->identify_transaction();
+					if (!empty($transinfo)){
+						return $transinfo;
+					}
+				}
 			}
 		}
 	}
@@ -112,7 +126,10 @@ abstract class courseshop_paymode {
 		foreach($plugins as $p){
 			include_once $CFG->dirroot.'/blocks/courseshop/paymodes/'.$p.'/'.$p.'.class.php';
 			$classname = "courseshop_paymode_$p";
-			$payments[$p] = new $classname($shopblockinstance);
+			$plugin = new $classname($shopblockinstance);
+			if ($plugin->is_interactive()){
+				$payments[$p] = $plugin;
+			}
 		}
 		
 		return $payments;
@@ -128,7 +145,7 @@ abstract class courseshop_paymode {
 			$classname = "courseshop_paymode_$p";
 			$blockinstance = null;
 			$pm = new $classname($blockinstance); // no need of real shop instances here
-			if ($pm->enabled){
+			if ($pm->enabled && $pm->has_config()){
 				$pm->settings($settings);
 			}
 		}	

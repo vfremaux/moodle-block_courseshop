@@ -1,11 +1,12 @@
-<?php //$Id: block_courseshop.php,v 1.15 2012-06-18 15:16:12 vf Exp $
+<?php //$Id: block_courseshop.php,v 1.4 2013-02-09 00:07:12 vf Exp $
 
 class block_courseshop extends block_base {
 
     function init() {
 
         $this->title = get_string('blocktitle', 'block_courseshop');
-        $this->version = 2012012100;
+        $this->version = 2013030301;
+        $this->cron = 60;
     }
 
     function has_config() {
@@ -68,6 +69,9 @@ class block_courseshop extends block_base {
 		// create the categoryowner role if absent
 		$categoryownerid = create_role(get_string('categoryowner', 'block_courseshop'), 'categoryowner', addslashes(get_string('categoryownerdesc', 'block_courseshop')), 'coursecreator');
 
+		// create the sales manager role if absent
+		$categoryownerid = create_role(get_string('salesrolename', 'block_courseshop'), 'sales', addslashes(get_string('salesroledesc', 'block_courseshop')), '');
+
         $editingteacher   = get_record('role', 'shortname', 'editingteacher');
         role_cap_duplicate($editingteacher, $courseownerid);
 
@@ -107,7 +111,57 @@ class block_courseshop extends block_base {
 		execute_sql($sql, false);
 		
 		// delete the teacherowner role if absent
-		delete_role(get_string('teacherowner', 'block_courseshop'), 'teacherowner', addslashes(get_string('teacherownerdesc', 'block_courseshop')));
-		delete_role(get_string('categoryowner', 'block_courseshop'), 'categoryowner', addslashes(get_string('categoryownerdesc', 'block_courseshop')));
+		$courseownerrole = get_record('role', 'name', 'courseowner');
+		$categoryownerrole = get_record('role', 'name', 'categoryowner');
+		$salesmanagerrole = get_record('role', 'name', 'sales');
+		delete_role($courseownerrole->id);
+		delete_role($categoryownerrole->id);
+		delete_role($salesmanagerrole->id);
+	}
+	
+	/**
+	* inspects instanciated products, get associated handlers and run cron function if exists
+	* To lower the load of this review, product will NOT be considered after their enddate + 'one day' value
+	* so designers must ensure "die time" handling is done in this delay.
+	*/
+	function cron(){
+		global $CFG;
+		
+		$horizon = time() - DAYSECS;
+		$sql = "
+			SELECT
+				p.id,
+				p.startdate,
+				p.enddate,
+				p.customerid,
+				c.hasaccount as userid,
+				p.reference,
+				ci.renewable,
+				ci.name,
+				ci.code,
+				ci.enablehandler
+			FROM
+				{$CFG->prefix}courseshop_product p,
+				{$CFG->prefix}courseshop_customer c,
+				{$CFG->prefix}courseshop_catalogitem ci
+			WHERE
+				p.catalogitemid = ci.id AND
+				p.customerid = c.id AND
+				(p.enddate > $horizon OR p.enddate = 0)
+		";
+		
+		if ($eligibles = get_records_sql($sql)){
+			foreach($eligibles as $p){
+				$phandlerclassfile = $p->code.'.class.php';
+				$phandlerclass = 'shop_handler_'.$p->code;
+				if ($p->enablehandler){
+					include_once($CFG->dirroot.'/blocks/courseshop/datahandling/handlers/'.$phandlerclassfile);
+					$handler = new $phandlerclass();
+					if (method_exists($hanlder, 'cron')){
+						$hanlder->cron($p);
+					}
+				}
+			}
+		}
 	}
 }

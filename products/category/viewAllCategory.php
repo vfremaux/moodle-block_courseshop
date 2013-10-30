@@ -20,6 +20,8 @@
     
     $CFG->block_courseshop_maxcategoryperpage = 20;
 
+    $maxorder = get_field('courseshop_catalogcategory', 'MAX(sortorder)', 'catalogid' , $theCatalog->id);
+
     $sql = "
         SELECT 
            c.*
@@ -63,7 +65,10 @@
 </tr>
 <?php
 	if (!empty($categories)){
+		$catcount = count($categories);
 		foreach ($categories as $portlet){
+			$portlet->maxorder = $maxorder;
+			$portlet->catcount = $catcount;
 			//if ($portlet->billCount == 0) $emptyAccounts++;
 			$portlet->url = $url;
 			include $CFG->dirroot.'/blocks/courseshop/lib/categoryLine.portlet.php';

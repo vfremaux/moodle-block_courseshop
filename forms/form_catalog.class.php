@@ -51,7 +51,7 @@
         	$mform->addElement('html', print_heading(get_string($this->mode.'catalog', 'block_courseshop')));
     		
     		// Adding fieldset
-    		$attributes = 'size="50" maxlength="200"';
+    		$attributes = 'size="50" maxlength="255"';
     		$attributes_description = 'cols="50" rows="8"';
 
     		$mform->addElement('hidden', 'catalogid');
@@ -66,6 +66,9 @@
     				
     		$mform->addRule('name', null, 'required');
     		$mform->addRule('description', null, 'required');
+
+    		$mform->addElement('text', 'countryrestrictions', get_string('countrycodelist', 'block_courseshop'), $attributes);
+			$mform->setHelpButton('countryrestrictions', array('countryrestrictions', get_string('countryrestrictions', 'block_courseshop'), 'block_courseshop'));
 
             // Add catalog mode settings
 

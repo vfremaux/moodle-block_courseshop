@@ -1,4 +1,4 @@
-<tr class="<?php echo strtolower($subportlet->status) ?>line">
+<tr class="courseshop-<?php echo strtolower($subportlet->status) ?>line">
     <td class="<?php echo (@$subportlet->masterrecord == 0) ? "" : "engraved" ; ?>">
        	<img src="<?php echo $subportlet->thumb ?>" vspace="10" border="0" height="50">
     </td>

@@ -4,8 +4,12 @@ require_once $CFG->dirroot.'/blocks/courseshop/paymodes/paymode.class.php';
 require_once $CFG->dirroot.'/blocks/courseshop/locallib.php';
 
 $currencies = courseshop_get_supported_currencies();
+
 $settings->add(new admin_setting_configselect('block_courseshop_defaultcurrency', get_string('defaultcurrency', 'block_courseshop'),
-                   get_string('configdefaultcurrency', 'block_courseshop'), $CFG->block_courseshop_defaultcurrency, $currencies));
+                   get_string('configdefaultcurrency', 'block_courseshop'), @$CFG->block_courseshop_defaultcurrency, $currencies));
+
+$settings->add(new admin_setting_configselect('block_courseshop_defaultcountry', get_string('defaultcountry', 'block_courseshop'),
+                   get_string('configdefaultcountry', 'block_courseshop'), @$CFG->block_courseshop_defaultcountry, get_list_of_countries()));
 
 $settings->add(new admin_setting_configtext('block_courseshop_discountthreshold', get_string('discountthreshold', 'block_courseshop'),
                    get_string('configdiscounttheshold', 'block_courseshop'), 0, PARAM_INT));
@@ -44,6 +48,9 @@ $settings->add(new admin_setting_configtext('block_courseshop_sellermailsupport'
 
 $settings->add(new admin_setting_configtext('block_courseshop_sellerphonesupport', get_string('sellerphonesupport', 'block_courseshop'),
                    get_string('configsellerphonesupport', 'block_courseshop'), '', PARAM_TEXT));
+
+$settings->add(new admin_setting_configtext('block_courseshop_sellerID', get_string('sellerID', 'block_courseshop'),
+                   get_string('configsellerID', 'block_courseshop'), '', PARAM_TEXT));
 
 $settings->add(new admin_setting_configtext('block_courseshop_sellerbillingaddress', get_string('sellerbillingaddress', 'block_courseshop'),
                    get_string('configsellerbillingaddress', 'block_courseshop'), '', PARAM_TEXT));

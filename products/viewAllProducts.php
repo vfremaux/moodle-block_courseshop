@@ -95,27 +95,21 @@ print_box_start();
 
 <table width="100%">
     <tr>
-        <td class="param"><?php print_string('name', 'block_courseshop') ?></td>
-        <td class="value"><?php echo $theCatalog->name ?></td>
+        <th class="header"><?php print_string('name', 'block_courseshop') ?></th>
+        <th class="header"><?php echo $theCatalog->name ?></th>
         <td rowspan="2" width="120" align="center" style="font-weight : bolder">
 <?php
 if ($theCatalog->ismaster){
-?>
-            <?php print_string('master', 'block_courseshop') ?>
-<?php
+	print_string('master', 'block_courseshop');
 } elseif ($theCatalog->isslave){
-?>
-            <?php print_string('slave', 'block_courseshop') ?>
-<?php
+	print_string('slave', 'block_courseshop');
 } else {
-?>
-            <?php print_string('standalone', 'block_courseshop') ?>
-<?php
+	print_string('standalone', 'block_courseshop');
 }
 ?>
         </td>
     </tr>
-    <tr>
+    <tr valign="top">
         <td class="param"><?php print_string('description') ?></td>
         <td class="value"><?php echo $theCatalog->description ?></td>
     </tr>

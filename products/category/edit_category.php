@@ -43,11 +43,17 @@
 
     if ($catalogcategory = $mform->get_data()){
         
+        if (!isset($catalogcategory->visible)){
+        	$catalogcategory->visible = 0;
+        }
         $catalogcategory->id = optional_param('categoryid', '', PARAM_INT);
 
         $catalogcategory->catalogid = $theCatalog->id;
+        
+        $maxorder = get_field('courseshop_catalogcategory', 'MAX(sortorder)', 'catalogid' , $theCatalog->id);
 
         if (empty($catalogcategory->id)){
+        	$catalogcategory->sortorder = $maxorder + 1;
             if (!$newid = insert_record('courseshop_catalogcategory', $catalogcategory)){
                 error("could not record category");
             }

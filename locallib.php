@@ -12,13 +12,13 @@ function courseshop_get_categories(&$catalog){
     // get all master categories
     $mastercategories = array();
     if ($catalog->isslave){
-        if (!$mastercategories = get_records('courseshop_catalogcategory', 'catalogid', $catalog->groupid, '', '*,1 as masterrecord')){
+        if (!$mastercategories = get_records_select('courseshop_catalogcategory', " catalogid = {$catalog->groupid} AND visible = 1 ", 'sortorder', '*,1 as masterrecord')){
             $mastercategories = array();
         }
     }
     
     // get all categories
-    if (!$localcategories = get_records('courseshop_catalogcategory', 'catalogid', $catalog->id, '', '*,0 as masterrecord')){
+    if (!$localcategories = get_records_select('courseshop_catalogcategory', " catalogid = {$catalog->id} AND visible = 1 ", 'sortorder', '*,0 as masterrecord')){
         $localcategories = array();
     }
     return array_merge($mastercategories, $localcategories);
@@ -92,6 +92,7 @@ function courseshop_get_standard_handlers_options(){
 * @return an object with params as object fields.
 */
 function courseshop_decode_params($catalogitemcode){
+
 	$paramstring = get_field('courseshop_catalogitem', 'handlerparams', 'code', "$catalogitemcode");
 	if (empty($paramstring)){
 		return null;
@@ -189,21 +190,21 @@ function courseshop_generate_username($firstname, $lastname){
     
     $username = $firstname.'.'.$lastname;
     
-    $username = str_replace('é', 'e', $username);
-    $username = str_replace('è', 'e', $username);
-    $username = str_replace('ê', 'e', $username);
-    $username = str_replace('ë', 'e', $username);
-    $username = str_replace('ö', 'o', $username);
-    $username = str_replace('ô', 'o', $username);
-    $username = str_replace('ü', 'u', $username);
-    $username = str_replace('û', 'u', $username);
-    $username = str_replace('ù', 'u', $username);
-    $username = str_replace('î', 'i', $username);
-    $username = str_replace('ï', 'i', $username);
-    $username = str_replace('à', 'a', $username);
-    $username = str_replace('â', 'a', $username);
-    $username = str_replace('ç', 'c', $username);
-    $username = str_replace('ñ', 'n', $username);
+    $username = str_replace('Ã©', 'e', $username);
+    $username = str_replace('Ã¨', 'e', $username);
+    $username = str_replace('Ãª', 'e', $username);
+    $username = str_replace('Ã«', 'e', $username);
+    $username = str_replace('Ã¶', 'o', $username);
+    $username = str_replace('Ã´', 'o', $username);
+    $username = str_replace('Ã¼', 'u', $username);
+    $username = str_replace('Ã»', 'u', $username);
+    $username = str_replace('Ã¹', 'u', $username);
+    $username = str_replace('Ã®', 'i', $username);
+    $username = str_replace('Ã¯', 'i', $username);
+    $username = str_replace('Ã ', 'a', $username);
+    $username = str_replace('Ã¢', 'a', $username);
+    $username = str_replace('Ã§', 'c', $username);
+    $username = str_replace('Ã±', 'n', $username);
     
     return $username;
 }
@@ -434,7 +435,7 @@ function courseshop_get_supported_currencies(){
 	return $CURRENCIES;
 }
 
-function block_courseshop_currency($block, $long = false){
+function courseshop_currency($block, $long = false){
 	global $CFG;
 	
 	if (!isset($block->config->currency)){
@@ -472,6 +473,26 @@ function block_courseshop_print_currency_choice($cur, $url, $cgicontext = array(
     
     if ($return) return $str;
     echo $str;
+}
+
+function courseshop_get_sales_managers($blockid){
+	global $CFG;
+	
+	$salesrole = get_record('role', 'shortname', 'sales');
+	$blockcontext = get_context_instance(CONTEXT_BLOCK, $blockid);
+	
+	$sql = "
+		SELECT DISTINCT
+			u.*
+		FROM
+			{$CFG->prefix}user u,
+			{$CFG->prefix}role_assignments ra
+		WHERE
+			u.id = ra.userid AND
+			roleid = $salesrole->id AND
+			contextid = $blockcontext->id
+	";
+	return get_records_sql($sql);
 }
 
 ?>

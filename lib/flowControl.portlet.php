@@ -39,32 +39,32 @@ function flowcontrol_toggle(){
       </th>
    </tr>
    <tr>
-       <td style="padding : 5px" align="left">
+       <td style="padding : 5px" align="left"><ul>
 <?php
 
 if ($froms){
     foreach($froms as $aFrom){
     ?>
-                <a href="<?php echo $portlet->url."&pinned={$pinned}&cmd=flowchange&status={$aFrom->from}" ?>"><?php print_string($aFrom->from, 'block_courseshop') ?></a>
+                <li><a href="<?php echo $portlet->url."&pinned={$pinned}&cmd=flowchange&status={$aFrom->from}" ?>"><?php print_string($aFrom->from, 'block_courseshop') ?></a></li>
     <?php
     }
 } else { 
     print_string('flowControlNetStart', 'block_courseshop');
 }
 ?>
-       </td>
-       <td style="padding : 5px" align="right">
+       </ul></td>
+       <td style="padding : 5px" align="right"><ul>
 <?php
 if ($tos){
     foreach($tos as $aTo){
 ?>
-            <a href="<?php echo $portlet->url."&pinned={$pinned}&cmd=flowchange&status={$aTo->to}" ?>"><?php print_string($aTo->to, 'block_courseshop') ?></a><br />
+            <li><a href="<?php echo $portlet->url."&pinned={$pinned}&cmd=flowchange&status={$aTo->to}" ?>"><?php print_string($aTo->to, 'block_courseshop') ?></a></li>
 <?php
     }
 } else {
      print_string('flowControlNetEnd', 'block_courseshop');
 }
 ?>
-       </td>
+       </ul></td>
    </tr>
 </table>

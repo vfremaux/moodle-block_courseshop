@@ -20,7 +20,7 @@
     if (isset($theBlock->config)){
         $catalogid = $theBlock->config->catalogue;
     } else {
-        error("This block is not configured");
+        error('This block is not configured');
     }
 
     include $CFG->dirroot.'/blocks/courseshop/classes/Catalog.class.php';
@@ -40,25 +40,42 @@ function openSalesPopup(){
    win = window.open("<?php echo $CFG->wwwroot ?>/blocks/courseshop/popup.php?p=sales", "sales", "width=600,height=600,toolbar=0,menubar=0,statusbar=0, resizable=1,scrollbars=1");
 }
 
-function addOneUnit(target, price, maxdelivery){
+function addOneUnit(target, code, price, maxdelivery){
+
     var formElement = document.caddie.elements[target];
+
     if (maxdelivery == 0 || parseInt(formElement.value) < maxdelivery){
         formElement.value = parseInt(formElement.value) + 1;
-        calculateLocal(formElement,price);
+        calculateLocal(formElement,code,price);
         totalize();
     } else {
         alert('<?php print_string('maxdeliveryreached', 'block_courseshop') ?>');
     }
 }
 
-function calculateLocal(obj, amount){
-   var localtotal = amount * obj.value;
-   document.caddie.elements[obj.name + "_total"].value = localtotal.toFixed(2);
-   var spanElement = document.getElementById('bag_' + obj.name);
-   tmp = "";
-   for(i = 0 ; i < obj.value ; i++)
-      tmp += "&nbsp;<img src='<?php $CFG->wwwroot?>/blocks/courseshop/pix/oneunit.gif' align='middle'>";
-   spanElement.innerHTML = tmp;
+function calculateLocal(obj, code, amount){
+
+   	var localtotal = amount * obj.value;
+
+   	document.caddie.elements[obj.name + "_total"].value = localtotal.toFixed(2);
+   	var spanElement = document.getElementById('bag_' + obj.name);
+   	tmp = "";
+   	for(i = 0 ; i < obj.value ; i++){
+      	tmp += '&nbsp;<img src="<?php echo $CFG->wwwroot ?>/blocks/courseshop/shop/productthumb.php?code='+code+'" align="middle">';
+    }
+   	spanElement.innerHTML = tmp;
+   
+   	ordertotal_caption = document.getElementById('producttotalcaption_' + obj.name);
+   	ordertotal_line = document.getElementById('producttotal_' + obj.name);
+   
+   	if (localtotal){
+	   ordertotal_caption.style.display = 'block';
+	   ordertotal_line.style.display = 'block';
+	} else {
+	   ordertotal_caption.style.display = 'none';
+	   ordertotal_line.style.display = 'none';
+	}
+   
 }
 
 function totalize(){
@@ -89,12 +106,12 @@ foreach($categories as $cat){
         if ($aProduct->isset === 1){
             foreach($aProduct->set as $aProduct){
 ?>
-      eval(document.caddie.<?php echo $aProduct->shortname ?>_total.value) +
+      eval(parseFloat(0 + document.caddie.<?php echo $aProduct->shortname ?>_total.value)) +
 <?php
             }
         } else {
 ?>
-      eval(document.caddie.<?php echo $aProduct->shortname ?>_total.value) +
+      eval(parseFloat(0 + document.caddie.<?php echo $aProduct->shortname ?>_total.value)) +
 <?php
         }
     }
@@ -119,17 +136,57 @@ if (!empty($CFG->block_courseshop_usediscountthreshold)){
 ?>
    totalSpan = document.getElementById('total_euros_span');
    objCountSpan = document.getElementById('object_count_span');
-   discountedSpan = document.getElementById('discounted_span');
+   discountedSpan = document.getElementById('courseshop-discounted-span');
    totalSpan.innerHTML = parseFloat(document.caddie.totalEurosTTC.value).toFixed(2);
    objCountSpan.innerHTML = objectCount;
    discountedSpan.innerHTML = parseFloat(document.caddie.discounted.value).toFixed(2) ;
+   
+	paymentDiv = document.getElementById('courseshop-paymodes');
+	if (total_count > 0){
+   		paymentDiv.style.opacity = 1.0;
+	} else {
+   		paymentDiv.style.opacity = 0.5;
+	}
 }
 
+/**
+* checks if there are some products in the basket (caddie).
+*
+*/
 function checkZeroEuroCommand(){
-    if (document.caddie.totalEurosTTC.value != 0){
+	var itemscount = document.caddie.elements.length;
+    if (itemscount){
         checkedformlaunch('caddie');
     } else {
        alert("<?php print_string('emptybasket', 'block_courseshop') ?>");
     }
     return false;
+}
+
+/**
+* Toggles product line category panels
+*
+*/
+function showcategory(catid, allids){
+
+	allidsarr = allids.split(',');
+	for (hidecatid in allidsarr){
+		toshowtabid = 'catli' + allidsarr[hidecatid];
+
+		toshowtab = document.getElementById(toshowtabid);
+		toshowtab.className = 'onerow';
+	
+		tohide = document.getElementById('category' + allidsarr[hidecatid]);
+		tohide.style.visibility = 'hidden';
+		tohide.style.display = 'none';
+	}
+
+	toshowtabid = 'catli'+catid;
+
+	toshowtab = document.getElementById(toshowtabid);
+	toshowtab.className = 'onerow here';
+
+	toshow = document.getElementById('category'+catid);
+	toshow.style.visibility = 'visible';
+	toshow.style.display = 'block';
 }

@@ -11,11 +11,11 @@ function send_confirm(){
 function listen_to_required_changes(){
 	if (haverequireddata()){
 		document.forms['confirmation'].elements['go_confirm'].disabled = false;
-		advicediv = document.getElementById('disabled-advice-span');
+		advicediv = document.getElementById('courseshop-disabled-advice-span');
 		advicediv.style.visibility = 'hidden';
 	} else {
 		document.forms['confirmation'].elements['go_confirm'].disabled = true;
-		advicediv = document.getElementById('disabled-advice-span');
+		advicediv = document.getElementById('courseshop-disabled-advice-span');
 		advicediv.style.visibility = 'visible';
 	}
 }
@@ -33,3 +33,14 @@ function haverequireddata(){
 	
 	return true;
 }
+
+function accept_eulas(buttonobj){
+	if (buttonobj.form.agreeeula.checked){
+		agreediv = document.getElementById('euladiv');
+		agreediv.style.display = 'none';
+		agreediv.style.visibiltiy = 'hidden';
+		orderpanel = document.getElementById('orderpanel');
+		orderpanel.style.display = 'block';
+	}
+}
+

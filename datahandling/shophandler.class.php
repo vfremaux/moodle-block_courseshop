@@ -1,6 +1,6 @@
 <?php
 
-class shop_handler{
+abstract class shop_handler{
 
 	var $productlabel;
 	
@@ -16,4 +16,22 @@ class shop_handler{
 			$billinfo->required[$matches[1]] = $_REQUEST[$field];
 		}
 	}
+
+	/**
+	* What is happening on order time, before it has been actually paied out
+	*
+	*/	
+	abstract function produce_prepay(&$data);
+
+	/**
+	* What is happening after it has been actually paied out, interactively
+	* or as result of a delayed sales administration action.
+	*/	
+	abstract function produce_postpay(&$data);
+
+	/**
+	* when implemented, the cron task for this handler will be run on courseshop cron
+	* cron can be used to notify users for end of product life, user role unassigns etc.
+	*/
+	// function cron(){}
 }

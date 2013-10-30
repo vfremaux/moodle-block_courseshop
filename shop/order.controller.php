@@ -14,14 +14,15 @@
     $transactionFail = '';
     
     // customer data
-    $firstname 		= required_param('firstname', PARAM_TEXT);
-    $lastname 		= required_param('lastname', PARAM_TEXT);
-    $address 		= required_param('address', PARAM_TEXT);
-    $city 			= required_param('city', PARAM_TEXT);
-    $zip 			= optional_param('zip', '', PARAM_TEXT);
-    $country 		= required_param('country', PARAM_TEXT);
+    $SESSION->shoppingcart['firstname'] = $firstname = required_param('firstname', PARAM_TEXT);
+    $SESSION->shoppingcart['lastname'] = $lastname = required_param('lastname', PARAM_TEXT);
+    $SESSION->shoppingcart['address'] = $address = required_param('address', PARAM_TEXT);
+    $SESSION->shoppingcart['city'] = $city = required_param('city', PARAM_TEXT);
+    $SESSION->shoppingcart['zip'] = $zip = optional_param('zip', '', PARAM_TEXT);
+    $SESSION->shoppingcart['organisation'] = $organisation = optional_param('organisation', '', PARAM_TEXT);
+    $SESSION->shoppingcart['country'] = $country = required_param('country', PARAM_TEXT);
     $SESSION->shoppingcart['paymode'] = $paymode = required_param('paymode', PARAM_ALPHA);
-    $mail 			= required_param('mail', PARAM_TEXT);
+    $SESSION->shoppingcart['mail'] = $mail = required_param('mail', PARAM_TEXT);
 
 /// check existance of a moodle user with this information, based on mail similarity
 
@@ -104,23 +105,58 @@
         }
     
         // record of customer/prospect if not in customer base
-        if(!$customer = get_record('courseshop_customer', 'email', $mail)){
-            $customer->email = $mail;
-            $customer->address = $address;
-            $customer->firstname = $firstname;
-            $customer->lastname = $lastname;
-            $customer->city = $city;
-            $customer->zip = $zip;
-            $customer->country = $country;
-            if (isloggedin()){ // catch the current moodleuser if a logged in user is new customer.
-            	$customer->hasaccount = $USER->id;
-            } else {
+        if (isloggedin()){ // catch the current moodleuser if a logged in user is new customer.
+        	if(!$customer = get_record('courseshop_customer', 'hasaccount', $USER->id)){
+		        $customer->email = $mail;
+		        $customer->address = $address;
+		        $customer->firstname = $firstname;
+		        $customer->lastname = $lastname;
+		        $customer->organisation = $organisation;
+		        $customer->city = $city;
+		        $customer->zip = $zip;
+		        $customer->country = strtoupper($country);
+    			$customer->hasaccount = $USER->id;
+            	$customer->id = insert_record('courseshop_customer', $customer);
+        	} else {
+		        $customer->email = $mail;
+		        $customer->address = $address;
+		        $customer->firstname = $firstname;
+		        $customer->lastname = $lastname;
+		        $customer->organisation = $organisation;
+		        $customer->city = $city;
+		        $customer->zip = $zip;
+		        $customer->country = strtoupper($country);
+            	update_record('courseshop_customer', $customer);
+        	}
+        } else {
+	        if(!$customer = get_record('courseshop_customer', 'email', $mail)){
+	            $customer->email = $mail;
+	            $customer->address = $address;
+	            $customer->firstname = $firstname;
+	            $customer->lastname = $lastname;
+		        $customer->organisation = $organisation;
+	            $customer->city = $city;
+	            $customer->zip = $zip;
+	            $customer->country = strtoupper($country);
+				$customer->hasaccount = 0;
             	// might we try to catch external customers that are already users inside ? 
-            }
-            $customer->id = insert_record('courseshop_customer', $customer);
+            	if ($user = get_record_select('user', " email = '$mail' AND LOWER(firstname) = LOWER('$firstname') AND LOWER(lastname) = LOWER('$lastname') " )){
+            		$customer->hasaccount = $user->id;
+            	}
+	            $customer->id = insert_record('courseshop_customer', $customer);
+	        } else {
+	            $customer->address = $address;
+	            $customer->firstname = $firstname;
+	            $customer->lastname = $lastname;
+		        $customer->organisation = $organisation;
+	            $customer->city = $city;
+	            $customer->zip = $zip;
+	            $customer->country = strtoupper($country);
+	            update_record('courseshop_customer', $customer);
+	        }
         }
     }
-
+    
 /// Calculating shipping - Collects all products based on catalog description in explicit variables sent by the shop
 
     // converts this varset in a product code keyed hash
@@ -177,7 +213,7 @@
             $bill->timetodo = 7; 
             $bill->taxes = 0;
             $bill->amount = 0;
-            $bill->currency = $theBlock->currency;
+            $bill->currency = (!@$theBlock->currency) ? $CFG->block_courseshop_defaultcurrency : $theBlock->currency ;
             $bill->convertedamount = 0;
             $bill->transactionid = $transid;
             $bill->expectedpaiement = time() + DAYSECS * 15;

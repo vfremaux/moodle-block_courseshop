@@ -1,1 +1,1 @@
-thanks you for your purchase. The order is actually pending for your payement :
+Thanks you for your purchase. Information about status of your request is available below:

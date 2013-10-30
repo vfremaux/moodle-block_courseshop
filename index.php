@@ -156,7 +156,7 @@ if ($catalogs){
 		</td>
 	</tr>
 <?php 
-if (has_capability('moodle:site/config', get_context_instance(CONTEXT_SYSTEM))){
+if (has_capability('moodle/site:config', get_context_instance(CONTEXT_SYSTEM))){
 ?>
 	<tr>
 		<td>

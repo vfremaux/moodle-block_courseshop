@@ -1,0 +1,11 @@
+<?php
+
+$choices = get_list_of_countries();
+
+print("<center><table width=\"400\">");
+foreach($choices as $key => $country){
+	print("<tr><td>$key</td><td>$country</td></tr>");
+}
+print("</table></center>");
+
+?>

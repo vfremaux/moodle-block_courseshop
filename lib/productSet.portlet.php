@@ -1,9 +1,9 @@
-<table class="article" width="100%">
+<table class="courseshop-article" width="100%">
    	<tr>
-		<td class="productpix" rowspan="<?php echo count($portlet->set) ?>" width="180">
+		<td class="courseshop-productpix" rowspan="<?php echo count($portlet->set) ?>" width="180">
            &nbsp;
         </td>
-        <td align="left" class="producttitle">
+        <td align="left" class="courseshop-producttitle">
          	<p><b><?php echo $portlet->name ?></b>
          	<?php echo $portlet->description ?>         
         </td>

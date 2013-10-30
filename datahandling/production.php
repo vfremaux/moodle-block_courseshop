@@ -24,8 +24,11 @@
 
         foreach($data->items as $anItem){
             if (debugging() && $CFG->block_courseshop_test) echo "preproducing for $anItem->itemcode <br/>";
-            $enablehandler = get_field('courseshop_catalogitem', 'enablehandler', 'code', $anItem->itemcode);
-            $handlerlabel = get_field('courseshop_catalogitem', 'shortname', 'code', $anItem->itemcode);
+        	$data->billitemid = $anItem->id;
+        	$catalogitem = get_record('courseshop_catalogitem', 'code', $anItem->itemcode);
+        	$data->catalogitemid = $catalogitem->id;
+            $enablehandler = $catalogitem->enablehandler;
+            $handlerlabel = $catalogitem->shortname;
             if(empty($enablehandler)) {
             	if (debugging() && $CFG->block_courseshop_test) echo "...handler disabled<br/>";
             	continue;
@@ -33,8 +36,8 @@
             	$thehandler = $anItem->itemcode;
             } else {
             	$thehandler = $enablehandler;
-            	$data->params = courseshop_decode_params($anItem->itemcode);
             }
+        	$data->actionparams = courseshop_decode_params($anItem->itemcode);
 
             if (!empty($thehandler) && is_readable($CFG->dirroot.'/blocks/courseshop/datahandling/handlers/'.$thehandler.'.class.php')){
                 include_once($CFG->dirroot.'/blocks/courseshop/datahandling/handlers/'.$thehandler.'.class.php');
@@ -44,7 +47,7 @@
                 if (method_exists($handler, 'process_required')){
                 	$handler->process_required($data);
                 	$anItem->customerdata = base64_encode(json_encode($data->required));
-                	update_record('courseshop_billitem', addslashes_object($anItem));
+                	update_record('courseshop_billitem', addslashes_recursive($anItem));
                 }
                 if (method_exists($handler, 'produce_prepay')){
                     if ($itemresponse = $handler->produce_prepay($data)){
@@ -72,9 +75,12 @@
         $response->salesadmin = '';
 
         foreach($data->items as $anItem){
+        	$data->billitemid = $anItem->id;
             if (debugging() && $CFG->block_courseshop_test) echo "postproducing for $anItem->itemcode <br/>";
-            $enablehandler = get_field('courseshop_catalogitem', 'enablehandler', 'code', $anItem->itemcode);
-            $handlerlabel = get_field('courseshop_catalogitem', 'shortname', 'code', $anItem->itemcode);
+        	$catalogitem = get_record('courseshop_catalogitem', 'code', $anItem->itemcode);
+        	$data->catalogitemid = $catalogitem->id;
+            $enablehandler = $catalogitem->enablehandler;
+            $handlerlabel = $catalogitem->shortname;
             if(empty($enablehandler)) {
             	if (debugging()) echo "...handler disabled<br/>";
             	continue;
@@ -82,8 +88,8 @@
             	$thehandler = $anItem->itemcode;
             } else {
             	$thehandler = $enablehandler;
-            	$data->actionparams = courseshop_decode_params($anItem->itemcode);
             }
+        	$data->actionparams = courseshop_decode_params($anItem->itemcode);
 
         	$data->required = (array)json_decode(base64_decode($anItem->customerdata));
             

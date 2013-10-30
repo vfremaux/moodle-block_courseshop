@@ -22,13 +22,13 @@ if (!function_exists('compile_mail_template')){
     * @param infomap a hash containing pairs of parm => data to replace in template
     * @return a fully resolved template where all data has been injected
     */
-    function compile_mail_template($template, $infomap, $module = 'techproject', $lang = '') {
+    function compile_mail_template($template, $infomap, $module = 'techproject', $lang = '', $transactionid = '') {
 		global $CFG, $USER;
 
         if (empty($lang)) $lang = @$USER->lang; 
         if (empty($lang)) $lang = $CFG->lang; 
 		
-        $notification = implode('', get_mail_template($template, $module, $lang));
+        $notification = implode('', get_mail_template($template, $module, $lang, $transactionid));
         foreach($infomap as $aKey => $aValue){
             $notification = str_replace("<%%$aKey%%>", $aValue, $notification);
         }
@@ -45,7 +45,7 @@ if (!function_exists('get_mail_template')){
     * @return string the template's content or false if no template file is available
 	*/
 											
-    function get_mail_template($virtual, $modulename, $lang = ''){
+    function get_mail_template($virtual, $modulename, $lang, $transactionid){
         global $CFG;
         
 		if (preg_match("/([^\/]+)(.*)$/", $modulename, $matches)) {
@@ -77,8 +77,7 @@ if (!function_exists('get_mail_template')){
         if (file_exists($templateName)){
             return file($templateName);
 		} else {
-			debug_print_backtrace();
-			notice("shopmaillib template $templateName not found");
+			courseshop_trace("[{$transactionid}] ".'Template processor : Template $templateName not found');
 		}
 		return array();
 	}

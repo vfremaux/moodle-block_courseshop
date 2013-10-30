@@ -2,6 +2,8 @@
 
     // Security
     if (!defined('MOODLE_INTERNAL')) die("You are not authorized to run this file directly");
+    
+    require_js($CFG->wwwroot.'/blocks/courseshop/js/bills.js');
 
     $billitems = array();
     $globalattachements = array();
@@ -74,7 +76,8 @@
     } else {
         error('Bad bill ID');
     }
-    
+
+	print_box_start('', 'billpanel');
 ?>
 <form name="selection" action="<?php echo $url ?>" method="get">
 <input type="hidden" name="cmd" value="" />
@@ -312,13 +315,16 @@ if (count($billitems) == 0) {
       </td>
    </tr>
    <tr class="totals">
-      <td valign="top" style="padding : 2px" colspan="9" class="totals attribute">
+      <th valign="top" colspan="9" class="header">
          <?php print_string('totalTTC', 'block_courseshop') ?>
-      </td>
-      <td valign="top" style="padding : 2px" class="" align="right">
-         <?php echo sprintf('%.2f', round($bill->amount, 2)) ?> <?php echo get_string($aFullBill->currency.'_symb', 'block_courseshop') ?>
-      </td>
+      </th>
+      <th valign="top" class="header" align="right">
+         <?php echo sprintf('%.2f', round($bill->amount, 2)) ?> <?php echo get_string($bill->currency.'_symb', 'block_courseshop') ?>
+      </th>
    </tr>
+</table>
+
+<table width="99%" class="flowcontrol">
    <tr>
      <td colspan="10">
 <!-- Flow control section -->
@@ -381,3 +387,7 @@ if (count($globalattachements) == 0) {
 </table>
 <br />
 <br />
+
+<?php
+	print_box_end();
+?>

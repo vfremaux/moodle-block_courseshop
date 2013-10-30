@@ -87,12 +87,14 @@ class Product_Form extends moodleform {
 		$mform->addElement('text', 'price1', get_string('unitprice1', 'block_courseshop'), $attributesshort);
 	    $mform->setType('price1', PARAM_NUMBER);
 
+		// implemented but not used
         if (@$CFG->block_coursehop_prices > 1){
-    		$mform->addElement('text', 'price2', get_string('unitprice1', 'block_courseshop'), $attributesshort);
+    		$mform->addElement('text', 'price2', get_string('unitprice2', 'block_courseshop'), $attributesshort);
 		    $mform->setType('price2', PARAM_NUMBER);
     	}
+		// implemented but not used
         if (@$CFG->block_coursehop_prices > 2){
-		    $mform->addElement('text', 'price3', get_string('unitprice1', 'block_courseshop'), $attributesshort);
+		    $mform->addElement('text', 'price3', get_string('unitprice3', 'block_courseshop'), $attributesshort);
 		    $mform->setType('price3', PARAM_NUMBER);
 		}
 		
@@ -162,9 +164,6 @@ class Product_Form extends moodleform {
 		$mform->addElement('text', 'thumb', get_string('thumbnail', 'block_courseshop'), $attributes);
 	    $mform->setType('thumb', PARAM_TEXT);
 
-		$mform->addElement('text', 'requireddata', get_string('requireddata', 'block_courseshop'), $attributes);
-	    $mform->setType('requireddata', PARAM_TEXT);
-
 		$statusopts = courseshop_get_status();
 		$mform->addElement('select', 'status', get_string('status', 'block_courseshop'), $statusopts);
 	    $mform->setType('status', PARAM_TEXT);
@@ -192,12 +191,20 @@ class Product_Form extends moodleform {
 		$handleropts['0'] = get_string('disabled', 'block_courseshop');
 		$handleropts['1'] = get_string('dedicated', 'block_courseshop');
 		$handleropts = array_merge($handleropts, courseshop_get_standard_handlers_options());
+
+		$mform->addElement('text', 'requireddata', get_string('requireddata', 'block_courseshop'), $attributes);
+	    $mform->setType('requireddata', PARAM_TEXT);
+		$mform->setHelpButton('requireddata', array('requireddata', get_string('helpnote', 'block_courseshop'), 'block_courseshop'));
 		
 		$mform->addElement('select', 'enablehandler', get_string('enablehandler', 'block_courseshop'), $handleropts);		
 
 		$mform->addElement('text', 'handlerparams', get_string('handlerparams', 'block_courseshop'), $attributes);
 	    $mform->setType('handlerparams', PARAM_TEXT);
 		$mform->setHelpButton('handlerparams', array('handlerparams', get_string('helpnote', 'block_courseshop'), 'block_courseshop'));
+
+		$mform->addElement('checkbox', 'renewable', get_string('renewable', 'block_courseshop'));
+
+		$mform->addElement('text', 'eulaurl', get_string('eulaurl', 'block_courseshop'));
 
 		$mform->addRule('code', null, 'required');
 		$mform->addRule('taxcode', null, 'required');

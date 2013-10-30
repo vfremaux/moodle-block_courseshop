@@ -1,4 +1,4 @@
-<tr class="<?php echo strtolower($portlet->status) ?>line">
+<tr class="courseshop-<?php echo strtolower($portlet->status) ?>line">
    <td>
         <a href="<?php echo $CFG->wwwroot.'/blocks/courseshop/products/view.php?view=viewProduct&productid={$portlet->id}&id={$id}") ?>"><?php echo $portlet->code ?></a>
    </td>

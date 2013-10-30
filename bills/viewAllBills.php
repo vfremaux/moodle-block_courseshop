@@ -154,7 +154,8 @@
       <td align="left">
       </td>
       <td align="right">
-         <a href="<?php echo $CFG->wwwroot."/blocks/courseshop/bills/edit_bill.php?id={$id}" ?>"><?php print_string('newbill', 'block_courseshop') ?></a>
+         <a href="<?php echo $CFG->wwwroot."/blocks/courseshop/export/export.php?id={$id}&what=allbills&format=excel" ?>"><?php print_string('exportasxls', 'block_courseshop') ?></a>
+          - <a href="<?php echo $CFG->wwwroot."/blocks/courseshop/bills/edit_bill.php?id={$id}" ?>"><?php print_string('newbill', 'block_courseshop') ?></a>
       </td>
    </tr>
 </table>

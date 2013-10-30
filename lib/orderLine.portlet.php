@@ -45,9 +45,14 @@ if (!empty($requireddata)){
     $datapairs = explode(';', $requireddata);
     foreach($datapairs as $apair){
         list($fieldname, $fieldtype, $fieldlabel) = split(':', $apair);
-		$hasrequireddata[] = "required_{$label}_{$fieldname}";
+
         echo $fieldlabel;
-        echo ' <span style="color:red"><sup>*</sup></span>: ';
+
+        if (preg_match('/^!(.*)$/', $fieldname, $matches)){
+        	$fieldname = $matches[1];
+			$hasrequireddata[] = "required_{$label}_{$fieldname}";
+        	echo ' <span style="color:red"><sup>*</sup></span>: ';
+		}
         switch($fieldtype){
             case 'textfield' : 
                 echo "<input type=\"text\" name=\"required_{$label}_{$fieldname}\" size=\"40\" onchange=\"listen_to_required_changes()\" />";

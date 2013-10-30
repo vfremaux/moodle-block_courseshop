@@ -15,7 +15,7 @@
 <hr/>
 <b>Montant total TTC :</b> <%%AMOUNT%%><br/>
 <b>Mode de paiement envisagé :</b> <%%PAYMODE%%><br/>
-<b>Nombre d'objets :</b> <%%ITEMS%%>
+<b>Nombre d'unités de vente :</b> <%%ITEMS%%>
 <hr/>
 <%%PRODUCTION_DATA%%>
 <hr/>

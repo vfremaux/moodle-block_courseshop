@@ -6,20 +6,19 @@
 
     require_once $CFG->dirroot.'/blocks/courseshop/mailtemplatelib.php';
     require_once $CFG->dirroot.'/blocks/courseshop/locallib.php';
+    require_once $CFG->dirroot.'/blocks/courseshop/paymodes/paymode.class.php'; // access to paymode statics
 
 	// 	resolving invoice identity and command
 	$transid = '';
 	$cmd = '';
-	/**
-	$payplugin = paymode::resolve_transaction_identification($transid, $cmd, $paymode);
-	*/
+
 	$transid = required_param('transid', PARAM_RAW);
 	$cmd = optional_param('cmd', '', PARAM_TEXT);
 	$aFullBill = courseshop_get_full_bill($transid, $theBlock);
+
 	/* 
 	All payment process is supposed to be done here !!
 	success is only for giving interactive answer to user.
-	$payplugin->process($cmd, $aFullBill, $theBlock); 
 	*/
     
     if ($cmd != ''){
@@ -40,11 +39,14 @@
 	    echo '</center>';
 
         echo '<center>';
-        print_box_start();
+        print_box_start('', 'billSuccessPanel');
         echo $CFG->block_courseshop_sellername.' ';
         echo compile_mail_template('postBillingMessage', array(), 'block_courseshop');
-        
-		echo compile_mail_template('successFollowUpText', array('SUPPORT' => $supportstr), 'block_courseshop/paymodes/'.$aFullBill->paymode);
+        echo '<br/>...</br/>';
+       	if ($aFullBill->amount){
+			echo compile_mail_template('successFollowUpText', array('SUPPORT' => $supportstr, 'TRANSID' => chunk_split($transid, 5, '-')), 'block_courseshop/paymodes/'.$aFullBill->paymode);
+		} else {
+		}
         print_box_end();
 
 		// a specific report
@@ -64,6 +66,7 @@
 		echo compile_mail_template('pendingFollowUpText', array('SUPPORT' => $supportstr), 'block_courseshop/paymodes/'.$aFullBill->paymode);
         print_box_end();
 	}
+
 	courseshop_print_printable_bill_link($aFullBill->id, $transid, $id, $pinned);
 	
 	// if testing the shop, provide a manual link to generate the paypal_ipn call

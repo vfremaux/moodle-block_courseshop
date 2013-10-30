@@ -1,4 +1,4 @@
-<tr class="<?php echo strtolower($portlet->status) ?>line">
+<tr class="courseshop-<?php echo strtolower($portlet->status) ?>line">
 
   <td class="productAdminLine <?php echo (@$portlet->masterrecord == 0) ? "" : "engraved slaved" ; ?>"align="center">
      <img src="<?php echo $portlet->thumb ?>" vspace="10" border="0" height="50">

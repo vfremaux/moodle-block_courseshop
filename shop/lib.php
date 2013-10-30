@@ -18,8 +18,8 @@ function courseshop_print_progress($step){
 	echo '<center>';
     $lang = current_language();
     $theme = current_theme();
-    if (file_exists($CFG->dirroot."/theme/{$theme}/blocks/courseshop/lang/{$lang}/{$step}.png")){
-    	echo "<img src=\"{$CFG->wwwroot}/theme/{$theme}/blocks/courseshop/lang/{$lang}/{$step}.png\" />";
+    if (file_exists($CFG->dirroot."/theme/{$theme}/pix/blocks/courseshop/lang/{$lang}/{$step}.png")){
+    	echo "<img src=\"{$CFG->wwwroot}/theme/{$theme}/pix/blocks/courseshop/lang/{$lang}/{$step}.png\" />";
     } else {
 	    echo "<img src=\"{$CFG->wwwroot}/blocks/courseshop/lang/$lang/{$step}.png\" />";
 	}
@@ -224,7 +224,7 @@ function courseshop_print_payment_block(&$theBlock){
 
     print_heading(get_string('paymentmethod', 'block_courseshop'));
 
-	echo '<table width="100%" id="paymodes">';
+	echo '<table width="100%" id="courseshop-paymodes">';
    	echo '<tr>';
     echo '<td valign="top" colspan="1">';
 	print_string('paymentmode', 'block_courseshop');
@@ -358,17 +358,17 @@ function courseshop_get_full_bill($transid, &$theBlock){
 	                	$aFullBill->items[$key]->required = json_decode(base64_decode($aFullBill->items[$key]->customerdata));
 	                }
 	                if($anItem->taxcode){
-		                $taxed = courseshop_calculate_taxed($anItem->totalprice, $anItem->taxcode);
+		                $taxed = courseshop_calculate_taxed($anItem->unitcost, $anItem->taxcode);
 		            } else {
-		            	$anItem->totalprice;
+		            	$taxed = $anItem->unitcost;
 		            }
 	                $aFullBill->items[$key]->taxedprice = $taxed;
-					$aFullBill->totalamount += $anItem->totalprice;
-					$aFullBill->totaltaxedamount += $taxed;
-					$aFullBill->unshippedamount += $anItem->totalprice;
-					$aFullBill->unshippedtaxedamount += $taxed;
-					$aFullBill->totaltaxes += $taxed - $anItem->totalprice;
-					$aFullBill->taxes[$anItem->taxcode]->amount = 0 + @$aFullBill->taxes[$anItem->taxcode]->amount + $taxed - $anItem->totalprice;
+					$aFullBill->totalamount += $anItem->unitcost * $anItem->quantity;
+					$aFullBill->totaltaxedamount += $taxed * $anItem->quantity;
+					$aFullBill->unshippedamount += $anItem->unitcost * $anItem->quantity;
+					$aFullBill->unshippedtaxedamount += $taxed * $anItem->quantity;
+					$aFullBill->totaltaxes += ($taxed - $anItem->unitcost) * $anItem->quantity;
+					$aFullBill->taxes[$anItem->taxcode]->amount = 0 + @$aFullBill->taxes[$anItem->taxcode]->amount + (($taxed - $anItem->unitcost) * $anItem->quantity);
 	                // traps shipping and discount
 	            }
 	        }
@@ -416,10 +416,11 @@ function courseshop_print_printable_bill_link($billid, $transid, $blockid, $pinn
     $options = '';            
     $billurl = $CFG->wwwroot."/blocks/courseshop/shop/order.popup.php?id={$blockid}&pinned={$pinned}&billid={$billid}&transid={$transid}";
     $customerid = get_field('courseshop_bill', 'userid', 'id', $billid); 
-    $userid = get_field('courseshop_customer', 'hasaccount', 'id', $customerid);
-    $billuser = get_record('user', 'id', $userid);
-    $ticket = ticket_generate($billuser, 'immediate access', $billurl);
-    button_to_popup_window ("/login/index.php?ticket={$ticket}" , get_string('printbill', 'block_courseshop'), get_string('printbill', 'block_courseshop'), 1024, 840, get_string('order', 'block_courseshop'), $options);
+    if ($userid = get_field('courseshop_customer', 'hasaccount', 'id', $customerid)){
+	    $billuser = get_record('user', 'id', $userid);
+	    $ticket = ticket_generate($billuser, 'immediate access', $billurl);
+	    button_to_popup_window ("/login/index.php?ticket={$ticket}" , 'print_bill_popup', get_string('printbill', 'block_courseshop'), 1024, 840, get_string('order', 'block_courseshop'), $options);
+	}
     $backtoshopstr = get_string('backtoshop', 'block_courseshop');
 	echo "<input type=\"button\" name=\"cancel_btn\" value=\"{$backtoshopstr}\" onclick=\"self.location.href='{$CFG->wwwroot}/blocks/courseshop/shop/view.php?view=shop&id={$blockid}&pinned={$pinned}'\" />";
 	echo '</td></tr></table>';
@@ -674,4 +675,351 @@ function courseshop_resolve_zone_rule($country, $zipcode, $rule){
 
 	return false;
 }
-?>
+
+/**
+* Restricts list of available countries per catalog.
+*
+*
+*/
+function courseshop_process_country_restrictions(&$choices, &$catalog){
+	
+	$restricted = array();
+	if(!empty($catalog->countryrestrictions)){
+		$restrictedcountries = explode(',', $catalog->countryrestrictions);
+		foreach($restrictedcountries as $rc){
+			// blind ignore unkown codes...
+			$cc = strtoupper($rc);
+			if (array_key_exists($cc, $choices)){
+				$restricted[$rc] = $choices[$cc];
+			}
+		}
+		$choices = $restricted;
+	}
+}
+
+/**
+* prints tabs for js activation of the category panel
+*
+*/
+function courseshop_print_category_tabs($categories){
+
+	echo '<div class="tabtree">';
+	echo '<ul class="tabrow0">';
+	
+	foreach($categories as $cat){
+		$catidsarr[] = $cat->id;
+	}
+	$catids = implode(',', $catidsarr);
+
+	$c = 0;
+	foreach($categories as $cat){
+		$catclass = ($c) ? 'onerow' : 'onerow here';
+		echo '<li id="catli'.$cat->id.'" class="'.$catclass.'"><a href="javascript:showcategory('.$cat->id.', \''.$catids.'\');"><span>'.$cat->name.'</span></a></li>';
+		$c++;
+	}
+	echo '</ul>';
+	echo '</div>';
+}
+
+
+function courseshop_print_catalog(&$theBlock, $categories){
+	global $CFG;
+
+	foreach($categories as $cat){
+		$catidsarr[] = $cat->id;
+	}
+	$catids = implode(',', $catidsarr);
+	
+	if (!isset($theBlock->config->printtabbedcategories)){
+		$theBlock->config->printtabbedcategories = false;
+	}
+	
+	if ($theBlock->config->printtabbedcategories){
+		courseshop_print_category_tabs($categories);
+	}
+	
+/// print catalog product line
+
+	$c = 0;
+
+    foreach($categories as $cat){
+    	
+    	if (!isset($firstcatid)) $firstcatid = $cat->id;
+    	
+		if ($theBlock->config->printtabbedcategories){
+			echo "<div class=\"courseshopcategory\" id=\"category{$cat->id}\" />";
+        } else {
+        	$cat->level = 1;
+        	print_heading($cat->name, 'center', $cat->level);
+        }
+        
+        if (!function_exists('subportlet')){
+            function subportlet(&$portlet){
+                global $CFG;
+                
+                if ($portlet->isset == 1){
+                   include($CFG->dirroot.'/blocks/courseshop/lib/productSet.portlet.php');
+                }
+                elseif ($portlet->isset == PRODUCT_BUNDLE){
+                   include($CFG->dirroot.'/blocks/courseshop/lib/bundleBlock.portlet.php');
+                } else {
+                   include($CFG->dirroot.'/blocks/courseshop/lib/productBlock.portlet.php');
+                }
+            }
+        }
+        
+        if (!empty($cat->products)){
+            foreach($cat->products as $aProduct){
+            	$aProduct->currency = courseshop_currency($theBlock, 'symbol');
+                subportlet($aProduct);
+            }
+        } else {
+            print_string('noproductincategory', 'block_courseshop');
+        }
+        $c++;
+		if ($theBlock->config->printtabbedcategories){
+			echo '</div>';
+		}
+    }
+    
+	echo "<script type=\"text/javascript\">showcategory(".@$firstcatid.", '{$catids}');</script>";
+}
+
+function courseshop_print_order_totals($theBlock){
+	global $CFG;
+
+	echo '<table width="100%" id="courseshop-ordertotals">';
+	echo '<tr valign="top">';
+	echo '<td align="left" class="courseshop-ordercell">';
+	echo '<b>'.get_string('ordertotal', 'block_courseshop').'</b> :'; 
+	echo '</td>';
+	echo '<td align="left" class="courseshop-ordercell">';
+	echo '<span id="total_euros_span">0.00</span>';
+	echo courseshop_currency($theBlock, 'symbol');
+	print_string('for', 'block_courseshop');
+	echo '<span id="object_count_span">0</span>';
+	print_string('objects', 'block_courseshop');
+	echo ' . <input type="hidden" name="totalEurosTTC" value="0">';
+	echo '</td></tr>';
+
+	if (!empty($CFG->block_courseshop_discountthreshold)){
+	   	echo '<tr>';
+		echo '<td>';
+		print_string('ismorethan', 'block_courseshop');
+		echo '<b>'.$CFG->block_courseshop_discountthreshold.'&nbsp;</b><b>'.courseshop_currency($theBlock, 'symbol').'</b>,<br/>'; 
+		print_string('yougetdiscountof', 'block_courseshop');
+		echo '<b>'.$CFG->block_courseshop_discountrate.' %</b>.<br/>';
+		echo '</td><td>&nbsp;</td>';
+	    echo '</tr>';
+	}
+
+	echo '<tr valign="bottom">';
+	echo '<td class="courseshop-finalcount">';
+	echo '<b>'.get_string('orderingtotal', 'block_courseshop').'</b>'; 
+	echo '</td>';
+	echo '<td align="left" class="courseshop-finalcount">';
+	echo '<span id="courseshop-discounted-span">0.00</span>';
+	echo '<input type="hidden" name="discounted" size="8" maxlength="6" value="0">'. courseshop_currency($theBlock, 'symbol');
+	echo '</td>';
+	echo '</tr>';
+
+	if (!empty($CFG->block_courseshop_useshipping)){
+		$shipchecked = (@$SESSION->shoppingcart['shipping']) ? 'checked="checked"' : '' ; 
+   		echo '<tr>';
+      	echo '<td align="left" colspan="2">';
+        echo '<span class="smalltext">(*)'. get_string('shippingadded', 'block_courseshop') .'<br/></span>';
+		echo '<input type="checkbox" name="shipping" value="1" '.$shipchecked.' /> '.get_string('askforshipping', 'block_courseshop');
+      	echo '</td>';
+   		echo '</tr>';
+	}
+
+	echo '</table>';
+}
+
+/**
+* This function checks for any product having an EULA url defined. 
+* If there are some, an EULA cover div will ask customer to agree with EULA
+* conditions, before accedding to the order confirm form.
+* 
+* @param array $catalog catalog structure for product line reference 
+* @param array $bill
+*/
+function courseshop_check_and_print_eula_conditions(&$products, &$shopproducts){
+	global $CFG;
+
+	$eula = '';
+	$eulastr = '';
+
+	foreach(array_keys($shopproducts) as $anItem){
+		if (!empty($products[$shopproducts[$anItem]]->eulaurl)){
+			$url = $products[$shopproducts[$anItem]]->eulaurl;
+			$url = str_replace($CFG->wwwroot.'/file.php/1/', $CFG->dataroot.'/1/', $url);
+			ob_start();
+			include_once $url;
+			$eula .= ob_get_clean();
+		}
+	}
+	
+	if (!empty($eula)){
+		$confirmstr = get_string('confirm', 'block_courseshop');
+		$eulastr .= '<div id="euladiv" style="position:absolute;padding:60px;top:0px;left:0px;width:100%;height:100%;z-index:100000;background-color:white">';
+		$eulastr .= '<div style="max-width:1000px">';
+		$eulastr .= '<h2>'.get_string('eulaheading', 'block_courseshop').'</h3>';
+		$eulastr .= '<p><b>'.get_string('eula_help', 'block_courseshop').'</b></p>';
+		$eulastr .= $eula;
+		$eulastr .= '<form name="eulaform">';
+		$eulastr .= '<input type="checkbox" name="agreeeula" id="agreeeula" value="1">  '.get_string('eulaagree', 'block_courseshop');
+		$eulastr .= '<br/><input type="button" name="accept_btn" value="'.$confirmstr.'" onclick="accept_eulas(this)">';
+		$eulastr .= '<script>document.getElementById(\'orderpanel\').style.display = \'none\';</script>';
+		$eulastr .= '</form>';
+		$eulastr .= '</div>';
+		$eulastr .= '</div>';
+	}	
+	return $eulastr;
+}
+
+function courseshop_print_customer_info_form(&$theBlock, &$theCatalog){
+	global $USER, $SESSION;
+	
+	print_heading(get_string('customerinformation', 'block_courseshop')); 
+	if(isloggedin()){
+	    $lastname = $USER->lastname;
+	    $firstname = $USER->firstname;
+	    $organisation = $USER->institution;
+	    $city = $USER->city;
+	    $address = $USER->address;
+	    $zip = '';
+	    $country = strtolower($USER->country);
+	    $email = $USER->email;
+    
+	    // get potential ZIP code information from an eventual customer record
+	    if ($customer = get_record('courseshop_customer', 'hasaccount', $USER->id)){
+	    	$zip = $customer->zip;
+	    	$organisation = $customer->organisation;
+	    	$address = $customer->address1;
+	    }
+	} else {
+	    $lastname = @$SESSION->shoppingcart['lastname'];
+	    $firstname = @$SESSION->shoppingcart['firstname'];
+	    $organisation = @$SESSION->shoppingcart['organisation'];
+	    $country = @$SESSION->shoppingcart['country'];
+	    $address = @$SESSION->shoppingcart['address'];
+	    $city = @$SESSION->shoppingcart['city'];
+	    $zip = @$SESSION->shoppingcart['zip'];
+	    $email = @$SESSION->shoppingcart['mail'];
+	}
+	if (empty($country) && !empty($theBlock->config->defaultcountry)){
+		$country = strtolower($theBlock->config->defaultcountry);
+	}
+	if (empty($country) && !empty($CFG->block_courseshop_defaultcountry)){
+		$country = strtolower($CFG->block_courseshop_defaultcountry);
+	}
+	
+	echo '<table cellspacing="3" width="100%" id="courseshop-customerdata">';
+	echo '<tr valign="top">';
+	echo '<td align="right">';
+	print_string('lastname');
+	echo '<sup style="color : red">*</sup>:';
+	echo '</td>';
+	echo '<td align="left">';
+	echo '<input type="text" name="lastname" size="20" class="courseshop-form-attenuated" onchange="setupper(this)" value="'. $lastname.'" />';
+	echo '</td>';
+	echo '</tr>';
+	echo '<tr valign="top">';
+	echo '<td align="right">';
+	print_string('firstname');
+	echo '<sup style="color : red">*</sup>:';
+	echo '</td>';
+	echo '<td align="left">';
+	echo '<input type="text" name="firstname" size="20" class="courseshop-form-attenuated" onchange="capitalizewords(this)" value="'.$firstname.'" />';
+	echo '</td>';
+	echo '</tr>';
+
+	if (!empty($theBlock->config->customerorganisationrequired)){
+   		echo '<tr valign="top">';
+		echo '<td align="right">';
+		print_string('organisation', 'block_courseshop');
+		echo ':</td>';
+		echo '<td align="left">';
+		echo '<input type="text" name="organisation" size="26" maxlength="64" class="courseshop-form-attenuated" value="'.$organisation.'" />';
+		echo '</td>';
+		echo '</tr>';
+	}
+
+	echo '<tr valign="top">';
+	echo '<td align="right">';
+	print_string('address');
+	echo '<sup style="color : red">*</sup>: ';
+	echo '</td>';
+	echo '<td align="left">';
+	echo '<input type="text" name="address" size="26" class="courseshop-form-attenuated" onchange="setupper(this)" value="'. $address .'" />';
+	echo '</td>';
+	echo '</tr>';
+	echo '<tr valign="top">';
+	echo '<td align="right">';
+	print_string('city');
+	echo '<sup style="color : red">*</sup>: ';
+	echo '</td>';
+	echo '<td align="left">';
+	echo '<input type="text" name="city" size="26" class="courseshop-form-attenuated" onchange="setupper(this)" value="'. $city .'" />';
+	echo '</td>';
+	echo '</tr>';
+	echo '<tr valign="top">';
+	echo '<td align="right">';
+	print_string('zip','block_courseshop');
+	echo '<sup style="color : red">*</sup>';
+	echo '</td>';
+	echo '<td align="left">';
+	echo '<input type="text" name="zip" size="6" class="courseshop-form-attenuated" value="'. $zip .'" />';
+	echo '</td>';
+	echo '</tr>';
+	echo '<tr valign="top">';
+	echo '<td align="right">';
+	print_string('country');
+	echo '<sup style="color : red">*</sup>: <br>';
+	echo '</td>';
+	echo '<td align="left">';
+    // $country = 'FR';
+    $choices = get_list_of_countries();
+    courseshop_process_country_restrictions($choices, $theCatalog);
+    $choices = array('' => get_string('selectacountry').'...') + $choices;
+    choose_from_menu($choices, 'country', $country, '', '', '0', false, false, 0, '', false, false, 'countrybox');
+    echo '</td>';
+   	echo '</tr>';
+   	echo '<tr valign="top">';
+	echo '<td align="right">';
+	print_string('email', 'block_courseshop');
+	echo '<sup style="color : red">*</sup>';
+	echo '</td>';
+	echo '<td align="left">';
+	echo '<input type="text" name="mail" size="30" class="courseshop-form-attenuated" onchange="testmail(this)" value="'.$email.'" />';
+	echo '</td>';
+	echo '</tr>';
+	echo '</table>';
+}
+
+/*
+*
+*
+*/
+function courseshop_print_free_order_form($bill, $blockid, $pinned){
+	global $CFG;
+
+	echo "<form name=\"freeorder\" method=\"POST\" action=\"{$CFG->wwwroot}/blocks/courseshop/shop/view.php\" style=\"display : inline\">";
+	echo "<input type=\"hidden\" name=\"view\" value=\"success\" /> ";
+	echo "<input type=\"hidden\" name=\"cmd\" value=\"\" /> "; 
+	echo "<input type=\"hidden\" name=\"transid\" value=\"$bill->transactionid\" /> ";
+	echo "<input type=\"hidden\" name=\"billid\" value=\"$bill->id\" /> ";
+	echo "<input type=\"hidden\" name=\"pinned\" value=\"$pinned\"> ";
+	echo "<input type=\"hidden\" name=\"id\" value=\"$blockid\"> ";
+	echo "<center>";
+	print_box_start('courseshop-info');
+	echo get_string('freeorderadvice', 'block_courseshop');
+	print_box_end();
+	echo '<br/>	';
+	$confirmstr = get_string('confirm', 'block_courseshop');
+	echo "<input type=\"submit\" name=\"confirm\" value=\"$confirmstr\" />";
+	echo "</center>";
+
+	echo "</form>";	
+}

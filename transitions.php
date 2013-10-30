@@ -22,11 +22,11 @@ function bill_transition_PENDING_SOLDOUT($info){
 		set_field('courseshop_bill', 'status', 'SOLDOUT', 'id', $info->billid);    
 		courseshop_trace("[{$bill->transactionid}] Bill Controller : Transaction Soldout Operation on seller behalf by $USER->username");	
 
-        $bill->billItems = get_records('courseshop_billitem', 'billid', $bill->id);
+        $bill->items = get_records('courseshop_billitem', 'billid', $bill->id);
         include $CFG->dirroot.'/blocks/courseshop/datahandling/production.php';
-        $customer = get_record('courseshop_customer', 'id', $bill->userid);
-        $bill->foruser = $customer->hasaccount;
-        $bill->user = get_record('user', 'id', $customer->hasaccount);
+        $bill->customer = get_record('courseshop_customer', 'id', $bill->userid);
+        $bill->foruser = $bill->customer->hasaccount;
+        $bill->user = get_record('user', 'id', $bill->customer->hasaccount);
         $bill->blockid = $info->blockid;
         $productiondata = produce_postpay($bill);
 
@@ -45,12 +45,12 @@ function bill_transition_PENDING_SOLDOUT($info){
 	    	$notification  = compile_mail_template('salesFeedback', array('SERVER' => $SITE->shortname,
 	                                                                   'SERVER_URL' => $CFG->wwwroot,
 	                                                                   'SELLER' => $CFG->block_courseshop_sellername,
-	                                                                   'FIRSTNAME' => $customer->firstname,
-	                                                                   'LASTNAME' =>  $customer->lastname,
-	                                                                   'MAIL' => $customer->email,
-	                                                                   'CITY' => $customer->city,
-	                                                                   'COUNTRY' => $customer->country,
-	                                                                   'ITEMS' => count($bill->billItems),
+	                                                                   'FIRSTNAME' => $bill->customer->firstname,
+	                                                                   'LASTNAME' =>  $bill->customer->lastname,
+	                                                                   'MAIL' => $bill->customer->email,
+	                                                                   'CITY' => $bill->customer->city,
+	                                                                   'COUNTRY' => $bill->customer->country,
+	                                                                   'ITEMS' => count($bill->itemcount),
 	                                                                   'PAYMODE' => get_string($bill->paymode, 'block_courseshop'),
 	                                                                   'AMOUNT' => $bill->amount), 
 	                                               'block_courseshop');
@@ -92,7 +92,7 @@ function bill_transition_DELAYED_PENDING($info){
 
         $bill->billItems = get_records('courseshop_billitem', 'billid', $bill->id);
         include $CFG->dirroot.'/blocks/courseshop/datahandling/production.php';
-        $customer = get_record('courseshop_customer', 'id', $bill->userid);
+        $bill->customer = get_record('courseshop_customer', 'id', $bill->userid);
         $bill->blockid = $info->blockid;
         $productiondata = produce_prepay($bill);
         
@@ -110,11 +110,11 @@ function bill_transition_DELAYED_PENDING($info){
 	    	$notification  = compile_mail_template('salesFeedback', array('SERVER' => $SITE->shortname,
 	                                                                   'SERVER_URL' => $CFG->wwwroot,
 	                                                                   'SELLER' => $CFG->block_courseshop_sellername,
-	                                                                   'FIRSTNAME' => $customer->firstname,
-	                                                                   'LASTNAME' =>  $customer->lastname,
-	                                                                   'MAIL' => $customer->email,
-	                                                                   'CITY' => $customer->city,
-	                                                                   'COUNTRY' => $customer->country,
+	                                                                   'FIRSTNAME' => $bill->customer->firstname,
+	                                                                   'LASTNAME' =>  $bill->customer->lastname,
+	                                                                   'MAIL' => $bill->customer->email,
+	                                                                   'CITY' => $bill->customer->city,
+	                                                                   'COUNTRY' => $bill->customer->country,
 	                                                                   'ITEMS' => count($bill->billItems),
 	                                                                   'PAYMODE' => get_string($bill->paymode, 'block_courseshop'),
 	                                                                   'AMOUNT' => $bill->amount), 

@@ -7,6 +7,7 @@ class Catalog {
     var $name;
     var $description;
     var $groupid;
+    var $countryrestrictions;
     var $isslave;
     var $ismaster;
 	
@@ -21,6 +22,7 @@ class Catalog {
                 $this->isslave = $aCatalog->isslave;
                 $this->ismaster = $aCatalog->ismaster;
                 $this->groupid = $aCatalog->groupid;
+                $this->countryrestrictions = $aCatalog->countryrestrictions;
             } else {
                 error("Error fetching catalog $ID");
             }
@@ -30,6 +32,7 @@ class Catalog {
 			$this->isslave = 0;
 			$this->ismaster = $aCatalog->ismaster;
 			$this->groupid = $aCatalog->groupid;
+			$this->countryrestrictions = '';
         } 
     }
    

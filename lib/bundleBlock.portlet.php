@@ -1,4 +1,4 @@
-<table class="article">
+<table class="courseshop-article">
    <tr>
         <td width="200" class="pad10">
             <img src="<?php echo $portlet->thumb ?>" vspace="10" border="0"><br>

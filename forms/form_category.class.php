@@ -56,6 +56,7 @@
 			//Title and descripton
 			
 			$mform->addElement('html', print_heading(get_string($this->mode.'category', 'block_courseshop'), 'center', 2, 'main', true)); 
+			$mform->addElement('checkbox', 'visible', get_string('visible', 'block_courseshop')); //Category visibility
 			$mform->addElement('text', 'name', get_string('categoryname', 'block_courseshop'), $attributes); //Category name field
 			$mform->addElement('htmleditor', 'description', get_string('categorydescription', 'block_courseshop')); //Category description field
 			$mform->setHelpButton('description', array('description', get_string('helpdescription', 'block_courseshop'), 'block_courseshop'));
